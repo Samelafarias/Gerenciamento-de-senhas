@@ -1,0 +1,2 @@
+Para rodar do front usar o comando:
+    npm run dev
