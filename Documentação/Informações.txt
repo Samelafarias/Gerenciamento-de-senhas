@@ -1,2 +1,5 @@
+Assim que o repositorio for clonado dar um:
+    npm istall
+
 Para rodar do front usar o comando:
     npm run dev
