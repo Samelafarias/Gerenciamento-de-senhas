@@ -1,0 +1,152 @@
+/* barra de navegação */
+.ticket-navbar {
+  background: #bfbfbf;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.ticket-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #e6e6e6;
+  border: 0;
+  padding: 10px 26px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: background 0.2s, transform 0.1s;
+}
+
+.ticket-btn img.admin-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.ticket-btn:hover {
+  background: #d9d9d9;
+}
+
+/* body da página */
+.ticket-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+/* card */
+.ticket-card {
+  background: #e6e6e6;
+  border-radius: 10px;
+  padding: 20px 30px;
+  width: 50%;
+  max-width: 1000px;
+  min-width: 500px;
+  min-height: 300px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.349);
+  justify-content: space-between;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* cabeçalho do card */
+.ticket-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.ticket-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.ticket-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 50px;
+  margin-top: -20px;
+}
+
+.ticket-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #fff;
+  margin-right: 10px;
+}
+
+.ticket-title {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* informações */
+.ticket-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-left: 20px;
+}
+
+.ticket-client {
+  display: flex;
+  flex-direction: column;
+}
+
+.ticket-client-name {
+  font-weight: bold;
+}
+.ticket-client-label,
+.ticket-password-label,
+.ticket-hour-label,
+.ticket-id-label,
+.ticket-sector-label,
+.ticket-type-label {
+  font-size: 12px;
+  color: #444;
+}
+
+/* valores */
+.ticket-password-value,
+.ticket-hour-value,
+.ticket-id-value,
+.ticket-sector-value,
+.ticket-type-value {
+  font-weight: bold;
+  display: block;
+}
+
+/* botão finalizar */
+.ticket-finish-btn {
+  margin-top: 20px;
+  align-self: flex-end;
+  background: #bfbfbf;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.ticket-finish-btn:hover {
+  background: #999;
+}
+
+/* rodapé */
+.footer {
+  background: #bfbfbf;
+  padding: 10px;
+}

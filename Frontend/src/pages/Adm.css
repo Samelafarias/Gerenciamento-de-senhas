@@ -1,0 +1,215 @@
+/* barra de navegação */
+.adm-navbar {
+  background: #bfbfbf;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.adm-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #e6e6e6;
+  border: 0;
+  padding: 10px 50px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: background 0.2s, transform 0.1s;
+}
+
+.adm-btn img.admin-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.adm-btn:hover {
+  background: #d9d9d9;
+}
+
+/* body da página */
+.adm-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+/* card */
+.adm-card {
+  background: #e6e6e6;
+  border-radius: 10px;
+  padding: 20px 30px;
+  width: 50%;
+  max-width: 1000px;
+  min-width: 500px;
+  min-height: 300px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.349);
+  justify-content: space-between;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* cabeçalho do card */
+.adm-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.adm-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding-top: -45px;
+}
+
+.adm-subtitle {
+  align-self: flex-start;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 35px;
+  margin-left: 40vh;
+}
+
+.adm-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 50px;
+  margin-top: -20px;
+}
+
+.adm-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #fff;
+  margin-right: 10px;
+}
+
+.adm-title {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* informações */
+.adm-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-left: 20px;
+}
+
+.adm-client {
+  display: flex;
+  flex-direction: column;
+}
+
+.adm-client-name {
+  font-weight: bold;
+}
+.adm-client-label,
+.adm-password-label,
+.adm-hour-label,
+.adm-id-label,
+.adm-sector-label,
+.adm-type-label {
+  font-size: 12px;
+  color: #444;
+}
+
+/* valores */
+.adm-password-value,
+.adm-hour-value,
+.adm-id-value,
+.adm-sector-value,
+.adm-type-value {
+  font-weight: bold;
+  display: block;
+}
+
+/* container geral dos botões no fim */
+.adm-bottom-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 20px;
+  max-width: 1000px;
+  min-width: 500px;
+  margin: 20px auto 12px;
+  padding: 0 20px;
+}
+
+/* grupo da esquerda */
+.adm-left-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* botão vermelho */
+.adm-next-btn {
+  background: #e60000; /* vermelho vibrante */
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.adm-next-btn:hover {
+  background: #cc0000;
+}
+
+/* botão verde */
+.adm-attend-btn {
+  background: #00b300; /* verde vibrante */
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.adm-attend-btn:hover {
+  background: #009900;
+}
+
+/* botão finalizar */
+.adm-finish-btn {
+  align-self: flex-end;
+  background: #bfbfbf;
+  border: none;
+  padding: 10px 40px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.adm-finish-btn:hover {
+  background: #999;
+}
+
+/* rodapé */
+.footer {
+  background: #bfbfbf;
+  padding: 10px;
+}
