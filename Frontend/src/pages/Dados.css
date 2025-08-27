@@ -21,9 +21,13 @@
   transition: background 0.2s, transform 0.1s;
 }
 
-.dados-admin-btn img.admin-icon {
+.dados-admin-icon {
   width: 20px;
   height: 20px;
+  display: inline-block;
+  background-color: black;
+  -webkit-mask: url('../assets/crown.svg') no-repeat center / contain;
+  mask: url('../assets/crown.svg') no-repeat center / contain;
 }
 
 .dados-admin-btn:hover {

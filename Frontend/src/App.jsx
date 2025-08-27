@@ -5,6 +5,7 @@ import Inicio from "./pages/Inicio";
 import Dados from "./pages/Dados";
 import Ticket from "./pages/Ticket";
 import Adm from "./pages/Adm";
+import Visor from "./pages/Visor";
 
 function App() {
   return (
@@ -18,6 +19,8 @@ function App() {
         <Route path="ticket" element={<Ticket />} />
 
         <Route path="adm" element={<Adm />} />
+
+        <Route path="visor" element={<Visor />} />
       </Routes>
     </Router>
   );

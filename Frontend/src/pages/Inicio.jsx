@@ -1,5 +1,4 @@
 import './Inicio.css';
-import AdminIcon from '../assets/crown.png';
 
 function Inicio() {
   return (
@@ -8,7 +7,7 @@ function Inicio() {
       <header className="navbar">
         <button className="admin-btn">
         Administrador
-        <img src={AdminIcon} alt="Admin" className="admin-icon" />
+        <span className="admin-icon"></span>
         </button>
       </header>
 

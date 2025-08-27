@@ -37,7 +37,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  justify-content: space-between;
+  padding: 40px 20px;
 }
 
 /* card */
@@ -71,7 +72,6 @@
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-  padding-top: -45px;
 }
 
 .adm-subtitle {
@@ -99,7 +99,7 @@
 
 .adm-title {
   font-weight: bold;
-  font-size: 18px;
+  font-size: 22px;
 }
 
 /* informações */
@@ -115,16 +115,23 @@
   flex-direction: column;
 }
 
-.adm-client-name {
+.adm-client-name,
+.adm-password-value,
+.adm-hour-value,
+.adm-id-value,
+.adm-sector-value,
+.adm-type-value {
   font-weight: bold;
+  font-size: 20px;
 }
+
 .adm-client-label,
 .adm-password-label,
 .adm-hour-label,
 .adm-id-label,
 .adm-sector-label,
 .adm-type-label {
-  font-size: 12px;
+  font-size: 14px;
   color: #444;
 }
 
@@ -136,6 +143,24 @@
 .adm-type-value {
   font-weight: bold;
   display: block;
+}
+
+/* linha título + botão */
+.adm-subtitle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1000px;
+  min-width: 500px;
+  margin-bottom: 20px;
+  padding: 0 20px;
+}
+
+.adm-subtitle {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
 }
 
 /* container geral dos botões no fim */
@@ -159,7 +184,7 @@
 
 /* botão vermelho */
 .adm-next-btn {
-  background: #e60000; /* vermelho vibrante */
+  background: #ff070e;
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -176,7 +201,7 @@
 
 /* botão verde */
 .adm-attend-btn {
-  background: #00b300; /* verde vibrante */
+  background: #0bda23;
   color: #fff;
   border: none;
   padding: 10px 20px;

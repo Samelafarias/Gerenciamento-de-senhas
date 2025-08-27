@@ -10,9 +10,15 @@ function Adm() {
 
       {/* body da página */}
       <main className="adm-main">
+
+      {/* conteúdo do topo */}
+        <div className="adm-subtitle-row">
+          <h2 className="adm-subtitle">Próximo atendimento</h2>
+          <button className="adm-finish-btn">Gerar relatório diário</button>
+        </div>
+        
         {/* conteúdo central */}
         <div className="adm-content">
-          <h2 className="adm-subtitle">Próximo atendimento</h2>
           <div className="adm-card">
             <div className="adm-header">
               <div className="adm-logo"></div>

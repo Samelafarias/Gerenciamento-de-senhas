@@ -1,5 +1,4 @@
 import './Ticket.css';
-import AdminIcon from '../assets/crown.png';
 
 function Ticket() {
   return (
@@ -8,7 +7,7 @@ function Ticket() {
       <header className="ticket-navbar">
         <button className="ticket-btn">
           Administrador
-          <img src={AdminIcon} alt="Admin" className="admin-icon" />
+          <span className="ticket-admin-icon"></span>
         </button>
       </header>
 

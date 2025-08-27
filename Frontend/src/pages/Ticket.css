@@ -21,9 +21,13 @@
   transition: background 0.2s, transform 0.1s;
 }
 
-.ticket-btn img.admin-icon {
+.ticket-admin-icon {
   width: 20px;
   height: 20px;
+  display: inline-block;
+  background-color: black;
+  -webkit-mask: url('../assets/crown.svg') no-repeat center / contain;
+  mask: url('../assets/crown.svg') no-repeat center / contain;
 }
 
 .ticket-btn:hover {
@@ -88,7 +92,7 @@
 
 .ticket-title {
   font-weight: bold;
-  font-size: 18px;
+  font-size: 22px;
 }
 
 /* informações */
@@ -104,8 +108,14 @@
   flex-direction: column;
 }
 
-.ticket-client-name {
+.ticket-client-name,
+.ticket-password-value,
+.ticket-hour-value,
+.ticket-id-value,
+.ticket-sector-value,
+.adm-type-value {
   font-weight: bold;
+  font-size: 20px;
 }
 .ticket-client-label,
 .ticket-password-label,
@@ -113,7 +123,7 @@
 .ticket-id-label,
 .ticket-sector-label,
 .ticket-type-label {
-  font-size: 12px;
+  font-size: 14px;
   color: #444;
 }
 

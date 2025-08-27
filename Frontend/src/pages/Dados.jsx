@@ -1,5 +1,4 @@
 import './Dados.css';
-import AdminIcon from '../assets/crown.png';
 
 function Dados() {
   return (
@@ -8,7 +7,7 @@ function Dados() {
       <header className="dados-navbar">
         <button className="dados-admin-btn">
         Administrador
-        <img src={AdminIcon} alt="Admin" className="admin-icon" />
+        <span className="dados-admin-icon"></span>
         </button>
       </header>
 
