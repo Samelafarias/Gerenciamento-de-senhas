@@ -14,6 +14,11 @@ function Dados() {
 
       {/* body da página */}
       <main className="dados-main">
+
+        {/* seta de voltar */}
+        <div className="dados-back" onClick={() => window.history.back()}>
+        </div>
+
         <form className="dados-form">
           <div className="dados-form-group">
             <label htmlFor="nome">Nome do cliente:</label>

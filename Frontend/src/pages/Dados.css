@@ -64,6 +64,23 @@
   margin-top: 60px;
 }
 
+.dados-back {
+  position: absolute;
+  top: 100px;
+  left: 30px;
+  width: 0;
+  height: 0;
+  border-top: 18px solid transparent;
+  border-bottom: 18px solid transparent;
+  border-right: 26px solid #0A4551;
+  cursor: pointer;
+  transition: border-right-color 0.2s;
+}
+
+.dados-back:hover {
+  border-right-color: #0189a4;
+}
+
 /* formulário */
 .dados-form {
   display: flex;
