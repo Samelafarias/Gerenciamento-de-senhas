@@ -65,6 +65,7 @@ function Adm() {
           </div>
 
           <button className="adm-finish-btn">Gerar relatório diário</button>
+          
         </div>
 
       </main>
