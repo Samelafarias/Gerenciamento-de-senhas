@@ -1,6 +1,10 @@
+*{
+  background-color: #F5F1F1;
+}
+
 /* barra de navegação */
 .adm-navbar {
-  background: #bfbfbf;
+  background: #0A4551;
   padding: 15px 30px;
   display: flex;
   justify-content: flex-end;
@@ -11,7 +15,7 @@
   width: 110px;
   height: 40px;
   display: inline-block;
-  background-color: black;
+  background-color: white;
   -webkit-mask: url('../assets/logo.svg') no-repeat center / contain;
   mask: url('../assets/logo.svg') no-repeat center / contain;
   margin-right: auto;
@@ -21,7 +25,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  background: #e6e6e6;
+  background: #00B4D8;
   border: 0;
   padding: 10px 50px;
   border-radius: 6px;
@@ -38,7 +42,7 @@
 }
 
 .adm-btn:hover {
-  background: #d9d9d9;
+  background: #0190ac;
 }
 
 /* body da página */
@@ -53,7 +57,7 @@
 
 /* card */
 .adm-card {
-  background: #e6e6e6;
+  background: #0A4551;
   border-radius: 10px;
   padding: 20px 30px;
   width: 50%;
@@ -62,7 +66,6 @@
   min-height: 300px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.349);
   justify-content: space-between;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -102,13 +105,14 @@
   align-items: center;
   margin-bottom: 50px;
   margin-top: -20px;
+  background: #0A4551;
 }
 
 .adm-logo {
   width: 50px;
   height: 50px;
   display: inline-block;
-  background-color: black;
+  background-color: white;
   -webkit-mask: url('../assets/logo-icone.svg') no-repeat center / contain;
   mask: url('../assets/logo-icone.svg') no-repeat center / contain;
   margin-right: 10px;
@@ -117,6 +121,8 @@
 .adm-title {
   font-weight: bold;
   font-size: 22px;
+  background: #0A4551;
+  color: #fff;
 }
 
 /* informações */
@@ -125,11 +131,22 @@
   grid-template-columns: 1fr 1fr;
   gap: 15px;
   margin-left: 20px;
+  background: #0A4551;
 }
 
 .adm-client {
   display: flex;
   flex-direction: column;
+  background: #0A4551;
+ 
+}
+
+.adm-password,
+.adm-hour,
+.adm-id,
+.adm-sector,
+.adm-type{
+  background: #0A4551;
 }
 
 .adm-client-name,
@@ -140,6 +157,8 @@
 .adm-type-value {
   font-weight: bold;
   font-size: 20px;
+  background: #0A4551;
+  color: #fff;
 }
 
 .adm-client-label,
@@ -149,7 +168,9 @@
 .adm-sector-label,
 .adm-type-label {
   font-size: 14px;
-  color: #444;
+  color: #fff;
+  background: #0A4551;
+  
 }
 
 /* valores */
@@ -160,6 +181,7 @@
 .adm-type-value {
   font-weight: bold;
   display: block;
+  background: #0A4551;
 }
 
 .adm-subtitle {
@@ -224,7 +246,7 @@
 /* botão finalizar */
 .adm-finish-btn {
   align-self: flex-end;
-  background: #bfbfbf;
+  background: #00B4D8;
   border: none;
   padding: 10px 40px;
   border-radius: 6px;
@@ -235,11 +257,11 @@
 }
 
 .adm-finish-btn:hover {
-  background: #999;
+  background: #0190ac;
 }
 
 /* rodapé */
 .footer {
-  background: #bfbfbf;
+  background: #0A4551;
   padding: 10px;
 }

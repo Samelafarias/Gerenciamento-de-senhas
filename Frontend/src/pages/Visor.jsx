@@ -16,7 +16,7 @@ function Visor() {
             </div>
 
             {/* espaço vazio pra alinhar o grid */}
-            <div></div>
+            <div className='div'></div>
 
             {/* linha 2 do card */}
             <div className="visor-password">
@@ -47,39 +47,39 @@ function Visor() {
         <h3 className="visor-last-title">Últimas senhas chamadas</h3>
         <div className="visor-last-cards">
           <div className="visor-last-card">
-            <span className="visor-client-name">Maria Silva</span>
-            <span className="visor-client-label">Cliente</span>
-            <span className="visor-password-value">XXXXXXXX</span>
-            <span className="visor-password-label">Senha</span>
-            <span className="visor-sector-value">Guichê</span>
-            <span className="visor-type-value">Prioritário</span>
-            <div className="visor-last-footer">
+            <span className="visor-last-client-name">Maria Silva</span>
+            <span className="visor-last-client-label">Cliente</span>
+            <span className="visor-last-password-value">XXXXXXXX</span>
+            <span className="visor-last-password-label">Senha</span>
+            <span className="visor-last-sector-value">Guichê</span>
+            <span className="visor-lats-type-value">Prioritário</span>
+            <div className="visor-last-last-footer">
               <span>10:00</span>
               <span>01/01/2000</span>
             </div>
           </div>
 
           <div className="visor-last-card">
-            <span className="visor-client-name">Maria Silva</span>
-            <span className="visor-client-label">Cliente</span>
-            <span className="visor-password-value">XXXXXXXX</span>
-            <span className="visor-password-label">Senha</span>
-            <span className="visor-sector-value">Guichê</span>
-            <span className="visor-type-value">Prioritário</span>
-            <div className="visor-last-footer">
+            <span className="visor-last-client-name">Maria Silva</span>
+            <span className="visor-last-client-label">Cliente</span>
+            <span className="visor-last-password-value">XXXXXXXX</span>
+            <span className="visor-last-password-label">Senha</span>
+            <span className="viso-last-sector-value">Guichê</span>
+            <span className="visor-last-type-value">Prioritário</span>
+            <div className="visor-last-last-footer">
               <span>10:00</span>
               <span>01/01/2000</span>
             </div>
           </div>
 
           <div className="visor-last-card">
-            <span className="visor-client-name">Maria Silva</span>
-            <span className="visor-client-label">Cliente</span>
-            <span className="visor-password-value">XXXXXXXX</span>
-            <span className="visor-password-label">Senha</span>
-            <span className="visor-sector-value">Guichê</span>
-            <span className="visor-type-value">Prioritário</span>
-            <div className="visor-last-footer">
+            <span className="visor-last-client-name">Maria Silva</span>
+            <span className="visor-last-client-label">Cliente</span>
+            <span className="visor-last-password-value">XXXXXXXX</span>
+            <span className="visor-last-password-label">Senha</span>
+            <span className="visor-last-sector-value">Guichê</span>
+            <span className="visor-last-type-value">Prioritário</span>
+            <div className="visor-last-last-footer">
               <span>10:00</span>
               <span>01/01/2000</span>
               </div>
