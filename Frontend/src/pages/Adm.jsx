@@ -14,7 +14,6 @@ function Adm() {
       {/* conteúdo do topo */}
         <div className="adm-subtitle-row">
           <h2 className="adm-subtitle">Próximo atendimento</h2>
-          <button className="adm-finish-btn">Gerar relatório diário</button>
         </div>
         
         {/* conteúdo central */}
@@ -66,7 +65,7 @@ function Adm() {
             <button className="adm-attend-btn">Realizar atendimento</button>
           </div>
 
-          <button className="adm-finish-btn">Mostrar no visor</button>
+          <button className="adm-finish-btn">Gerar Relatório Diário</button>
         </div>
 
       </main>
