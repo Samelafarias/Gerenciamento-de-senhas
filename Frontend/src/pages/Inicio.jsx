@@ -5,6 +5,7 @@ function Inicio() {
     <div className="inicio">
       {/* barra de navegação */}
       <header className="navbar">
+        <span className="inicio-logo"></span>
         <button className="admin-btn">
         Administrador
         <span className="admin-icon"></span>

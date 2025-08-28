@@ -5,6 +5,7 @@ function Adm() {
     <div className="adm-container">
       {/* barra de navegação */}
       <header className="adm-navbar">
+        <span className="adm-logo-principal"></span>
         <button className="adm-btn">Gerar senha</button>
       </header>
 
@@ -12,16 +13,13 @@ function Adm() {
       <main className="adm-main">
 
       {/* conteúdo do topo */}
-        <div className="adm-subtitle-row">
           <h2 className="adm-subtitle">Próximo atendimento</h2>
-          <button className="adm-finish-btn">Gerar relatório diário</button>
-        </div>
         
         {/* conteúdo central */}
         <div className="adm-content">
           <div className="adm-card">
             <div className="adm-header">
-              <div className="adm-logo"></div>
+              <span className="adm-logo"></span>
               <span className="adm-title">Ticket Gerado</span>
             </div>
 
@@ -66,7 +64,7 @@ function Adm() {
             <button className="adm-attend-btn">Realizar atendimento</button>
           </div>
 
-          <button className="adm-finish-btn">Mostrar no visor</button>
+          <button className="adm-finish-btn">Gerar relatório diário</button>
         </div>
 
       </main>

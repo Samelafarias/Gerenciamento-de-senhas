@@ -3,8 +3,10 @@ import './Ticket.css';
 function Ticket() {
   return (
     <div className="ticket-container">
+      
       {/* barra de navegação */}
       <header className="ticket-navbar">
+        <span className="ticket-logo-principal"></span>
         <button className="ticket-btn">
           Administrador
           <span className="ticket-admin-icon"></span>
@@ -13,11 +15,16 @@ function Ticket() {
 
       {/* body da página */}
       <main className="ticket-main">
+
+        {/* seta de voltar */}
+        <div className="ticket-back" onClick={() => window.history.back()}>
+        </div>
+
         {/* conteúdo central */}
         <div className="ticket-content">
           <div className="ticket-card">
             <div className="ticket-header">
-              <div className="ticket-logo"></div>
+              <span className="ticket-logo"></span>
               <span className="ticket-title">Ticket Gerado</span>
             </div>
 

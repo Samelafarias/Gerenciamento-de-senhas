@@ -7,6 +7,16 @@
   align-items: center;
 }
 
+.ticket-logo-principal {
+  width: 110px;
+  height: 40px;
+  display: inline-block;
+  background-color: black;
+  -webkit-mask: url('../assets/logo.svg') no-repeat center / contain;
+  mask: url('../assets/logo.svg') no-repeat center / contain;
+  margin-right: auto;
+}
+
 .ticket-btn {
   display: flex;
   align-items: center;
@@ -41,6 +51,27 @@
   flex-direction: column;
   align-items: center;
   padding: 20px;
+}
+
+.ticket-main {
+  position: relative;
+}
+
+.ticket-back {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  width: 0;
+  height: 0;
+  border-top: 18px solid transparent;
+  border-bottom: 18px solid transparent;
+  border-right: 26px solid #bfbfbf;
+  cursor: pointer;
+  transition: border-right-color 0.2s;
+}
+
+.ticket-back:hover {
+  border-right-color: #555;
 }
 
 /* card */
@@ -85,8 +116,10 @@
 .ticket-logo {
   width: 50px;
   height: 50px;
-  border-radius: 50%;
-  background: #fff;
+  display: inline-block;
+  background-color: black;
+  -webkit-mask: url('../assets/logo-icone.svg') no-repeat center / contain;
+  mask: url('../assets/logo-icone.svg') no-repeat center / contain;
   margin-right: 10px;
 }
 

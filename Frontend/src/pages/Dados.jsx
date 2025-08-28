@@ -5,6 +5,7 @@ function Dados() {
     <div className="dados-container">
       {/* barra de navegação */}
       <header className="dados-navbar">
+        <span className="dados-logo"></span>
         <button className="dados-admin-btn">
         Administrador
         <span className="dados-admin-icon"></span>

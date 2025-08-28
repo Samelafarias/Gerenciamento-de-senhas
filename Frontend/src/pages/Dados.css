@@ -7,6 +7,16 @@
   align-items: center;
 }
 
+.dados-logo {
+  width: 110px;
+  height: 40px;
+  display: inline-block;
+  background-color: black;
+  -webkit-mask: url('../assets/logo.svg') no-repeat center / contain;
+  mask: url('../assets/logo.svg') no-repeat center / contain;
+  margin-right: auto;
+}
+
 .dados-admin-btn {
   display: flex;
   align-items: center;
