@@ -88,5 +88,5 @@ A aplicação frontend estará disponível em http://localhost:5173 (ou outra po
  - [Kaique do Vale](https://github.com/KaiqueVale)
 
  ## 📄 Licença
- 
+ Esse projeto foi feito com fins academicos.
  
