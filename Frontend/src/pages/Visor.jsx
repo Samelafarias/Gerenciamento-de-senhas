@@ -1,46 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import socket from '../socket'; 
 
 function Visor() {
   const [senhasChamadas, setSenhasChamadas] = useState([]);
 
-  // Função para carregar os dados do localStorage da chave correta
-  const carregarSenhas = () => {
-    try {
-      // CORREÇÃO: Lendo da chave 'atendimentosFinalizados'
-      const dadosSalvos = localStorage.getItem('atendimentosFinalizados');
-      if (dadosSalvos) {
-        setSenhasChamadas(JSON.parse(dadosSalvos));
-      }
-    } catch (error) {
-      console.error("Erro ao carregar senhas do localStorage:", error);
-      setSenhasChamadas([]);
-    }
-  };
-
   useEffect(() => {
-    // Carrega os dados na primeira vez que o componente é montado
-    carregarSenhas();
+    socket.on('finalizados-inicial', (finalizados) => {
+      setSenhasChamadas(finalizados);
+    });
 
-    // Adiciona um "ouvinte" que atualiza a página em tempo real
-    // se a chave 'atendimentosFinalizados' for alterada em outra aba
-    const handleStorageChange = (event) => {
-      // CORREÇÃO: Ouvindo a chave 'atendimentosFinalizados'
-      if (event.key === 'atendimentosFinalizados') {
-        carregarSenhas();
-      }
-    };
+    socket.on('atualizar-finalizados', (novosFinalizados) => {
+      setSenhasChamadas(novosFinalizados);
+    });
 
-    window.addEventListener('storage', handleStorageChange);
-
-    // Limpa o "ouvinte" quando o componente é desmontado
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      socket.off('finalizados-inicial');
+      socket.off('atualizar-finalizados');
     };
   }, []); 
-
-  // A senha principal é a última a ser chamada (último item do array)
+  
   const senhaPrincipal = senhasChamadas.length > 0 ? senhasChamadas[senhasChamadas.length - 1] : null;
-  // As últimas senhas são as 3 anteriores à principal
   const ultimasSenhas = senhasChamadas.length > 1 ? senhasChamadas.slice(-4, -1).reverse() : [];
 
   return (
@@ -52,38 +31,11 @@ function Visor() {
             font-family: Arial, sans-serif;
           }
 
-          /* body da página */
           html, body {
             margin: 0;
             padding: 0;
             height: 100%;
             overflow: hidden;
-          }
-
-          .visor-main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            padding: 40px 20px;
-          }
-
-          /* card */
-          .visor-card {
-            background: #0A4551;
-            border-radius: 10px;
-            width: 35%;
-            max-width: 1000px;
-            min-width: 400px;
-            min-height: 250px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.349);
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
           }
 
           .visor-container {
@@ -100,53 +52,53 @@ function Visor() {
             justify-content: flex-start;
           }
 
-          /* informações */
+          .visor-card {
+            background: #0A4551;
+            border-radius: 10px;
+            width: 35%;
+            max-width: 1000px;
+            min-width: 400px;
+            min-height: 250px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.349);
+            margin-top: 10vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+          }
+
           .visor-info {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            grid-template-rows: auto auto auto;
             gap: 20px 130px;
             background: #0A4551;
             padding: 20px;
           }
           
-          .visor-client,
-          .visor-password,
-          .visor-hour,
-          .visor-sector,
-          .visor-type {
+          .visor-client, .visor-password, .visor-hour, .visor-sector, .visor-type {
             display: flex;
             flex-direction: column;
             color: #fff;
             background: #0A4551;
           }
 
-          .visor-client-name,
-          .visor-password-value,
-          .visor-hour-value,
-          .visor-sector-value,
-          .visor-type-value {
+          .visor-client-name, .visor-password-value, .visor-hour-value, .visor-sector-value, .visor-type-value {
             font-weight: bold;
             font-size: 24px;
             background: #0A4551;
             color: #F5F1F1;
           }
 
-          .visor-client-label,
-          .visor-password-label,
-          .visor-hour-label,
-          .visor-sector-label,
-          .visor-type-label {
+          .visor-client-label, .visor-password-label, .visor-hour-label, .visor-sector-label, .visor-type-label {
             font-size: 16px;
             background: #0A4551;
             color: #ccc;
           }
           
-          .div {
+          .div-vazia {
             background: #0A4551;
           }
 
-          /* últimas senhas chamadas */
           .visor-last {
             position: absolute;
             bottom: 0;
@@ -196,7 +148,6 @@ function Visor() {
           .visor-last-sector-value { grid-area: value-sector; font-weight: bold; text-align: right; }
           .visor-last-footer { grid-area: footer; display: flex; justify-content: space-between; font-size: 12px; margin-top: 5px; color: #666; }
 
-          /* Torna os spans dentro dos cards transparentes para o background do pai */
           .visor-last-card span, .visor-last-card div {
             background-color: transparent;
           }
@@ -204,68 +155,48 @@ function Visor() {
       </style>
 
       <div className="visor-container">
-        {/* conteúdo central */}
         <div className="visor-content">
-          {/* card principal */}
           <div className="visor-card">
             <div className="visor-info">
-
-              {/* linha 1 do card */}
               <div className="visor-client">
                 <span className="visor-client-name">{senhaPrincipal?.nome || 'Aguardando Cliente'}</span>
                 <span className="visor-client-label">Cliente</span>
               </div>
-
-              {/* espaço vazio pra alinhar o grid */}
-              <div className='div'></div>
-
-              {/* linha 2 do card */}
+              <div className='div-vazia'></div>
               <div className="visor-password">
                 <span className="visor-password-value">{senhaPrincipal?.senha || '---'}</span>
                 <span className="visor-password-label">Senha</span>
               </div>
-
               <div className="visor-sector">
-                {/* CORREÇÃO: Usando 'setor' ao invés de 'guiche' */}
                 <span className="visor-sector-value">{senhaPrincipal?.setor || '---'}</span>
                 <span className="visor-sector-label">Setor</span>
               </div>
-
-              {/* linha 3 do card */}
               <div className="visor-hour">
                 <span className="visor-hour-value">{senhaPrincipal?.hora || '--:--'}</span>
                 <span className="visor-hour-label">Hora</span>
               </div>
-
               <div className="visor-type">
                 <span className="visor-type-value">{senhaPrincipal?.tipo || '---'}</span>
                 <span className="visor-type-label">Tipo</span>
               </div>
             </div>
           </div>
-
-          {/* últimas senhas chamadas */}
           <div className="visor-last">
             <h3 className="visor-last-title">Últimas senhas chamadas</h3>
             <div className="visor-last-cards">
               {ultimasSenhas.map((senha) => (
                 <div className="visor-last-card" key={senha.id}>
                   <span className="visor-last-client-name">{senha.nome}</span>
-                  
                   <span className="visor-last-password-label">Senha:</span>
                   <span className="visor-last-password-value">{senha.senha}</span>
-
-                  {/* CORREÇÃO: Usando 'setor' ao invés de 'guiche' */}
                   <span className="visor-last-sector-label">Setor:</span>
                   <span className="visor-last-sector-value">{senha.setor}</span>
-                  
                   <div className="visor-last-footer">
                     <span>{senha.hora}</span>
                     <span>{new Date(senha.data).toLocaleDateString('pt-BR')}</span>
                   </div>
                 </div>
               ))}
-              {/* Adiciona placeholders se houver menos de 3 senhas */}
               {Array.from({ length: 3 - ultimasSenhas.length }).map((_, index) => (
                   <div className="visor-last-card" key={`placeholder-${index}`} style={{opacity: 0.5}}>
                     <span className="visor-last-client-name">Aguardando...</span>

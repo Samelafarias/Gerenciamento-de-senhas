@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import socket from '../socket';
 
 const styles = `
   .dados-body * { /* Aplicando estilos globais apenas dentro deste escopo */
@@ -220,10 +221,8 @@ function Dados() {
     }));
   };
 
-  // --- FUNÇÃO HANDLESUBMIT ATUALIZADA ---
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (!formData.setor) {
       alert('Por favor, selecione um setor para ser atendido.');
       return;
@@ -231,28 +230,25 @@ function Dados() {
 
     const tipoAtendimento = localStorage.getItem('tipoAtendimento') || 'Não definido';
 
+    const timestamp = Date.now();
+    const senhaLetra = tipoAtendimento === 'Prioritário' ? 'P' : 'C';
+    const senhaNumero = String(timestamp).slice(-4); 
+
     const dadosCompletos = {
-      ...formData,
-      tipoAtendimento: tipoAtendimento,
-      dataHora: new Date().toISOString() 
+      id: formData.cpf || `${senhaLetra}-${timestamp}`, 
+      nome: formData.nome,
+      cpf: formData.cpf,
+      setor: formData.setor,
+      tipo: tipoAtendimento,
+      hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+      senha: `${senhaLetra}${senhaNumero}`,
+      dataHora: new Date().toISOString()
     };
 
-    // 1. Pega a chave de hoje (ex: 'atendimentos_2025-09-02')
-    const chaveDoDia = getChaveDoDia();
+    socket.emit('gerar-novo-atendimento', dadosCompletos);
 
-    // 2. Lê a lista existente de atendimentos do dia ou cria uma lista vazia
-    const atendimentosAnteriores = JSON.parse(localStorage.getItem(chaveDoDia) || '[]');
-
-    // 3. Adiciona o novo atendimento à lista
-    atendimentosAnteriores.push(dadosCompletos);
-
-    // 4. Salva a lista COMPLETA de volta no localStorage
-    localStorage.setItem(chaveDoDia, JSON.stringify(atendimentosAnteriores));
-    
-    // 5. Salva APENAS o último atendimento em uma chave temporária para a página de ticket usar
     localStorage.setItem('ultimoAtendimentoGerado', JSON.stringify(dadosCompletos));
     
-    // 6. Redireciona para a página do ticket
     navigate('/ticket'); 
   };
 
@@ -280,10 +276,10 @@ function Dados() {
               <input
                 type="text"
                 id="nome"
-                name="nome" // O atributo 'name' é essencial para o handleChange
+                name="nome" 
                 placeholder="Nome completo"
-                value={formData.nome} // Liga o valor do input ao estado
-                onChange={handleChange} // Chama a função a cada alteração
+                value={formData.nome} 
+                onChange={handleChange} 
                 required
               />
             </div>

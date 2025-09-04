@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import socket from '../socket'; 
 
-// Estilos (sem alterações)
+
 const styles = `
 * {
     background-color: #F5F1F1;
@@ -200,18 +201,9 @@ const styles = `
   .footer {
     background: #0A4551;
     padding: 10px;
-    margin-top: auto; /* Empurra o rodapé para o fim */
+    margin-top: auto;
   }
 `;
-
-// FUNÇÃO PARA PEGAR A CHAVE DO LOCALSTORAGE - IGUAL A DA PÁGINA 'Dados'
-const getChaveDoDia = () => {
-  const hoje = new Date();
-  const ano = hoje.getFullYear();
-  const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-  const dia = String(hoje.getDate()).padStart(2, '0');
-  return `atendimentos_${ano}-${mes}-${dia}`;
-};
 
 const TEMPO_ESPERA = 5000; // 5 segundos em milissegundos
 
@@ -219,73 +211,35 @@ function Adm() {
   const navigate = useNavigate();
   const timerRef = useRef(null);
 
-  // --- ESTADO DA APLICAÇÃO ---
-
-  // Tenta carregar a fila do localStorage ou inicia uma fila vazia
-  const [filaDeSenhas, setFilaDeSenhas] = useState(() => {
-    try {
-      const chaveDoDia = getChaveDoDia();
-      const atendimentosSalvos = localStorage.getItem(chaveDoDia);
-
-      if (atendimentosSalvos) {
-        const dadosOriginais = JSON.parse(atendimentosSalvos);
-        
-        // Transforma os dados para o formato que a página Adm espera
-        const dadosFormatados = dadosOriginais.map((at, index) => ({
-          id: at.cpf, // Usa o CPF como ID único
-          nome: at.nome,
-          senha: `${at.tipoAtendimento === 'Prioritário' ? 'P' : 'C'}${(index + 1).toString().padStart(3, '0')}`,
-          hora: new Date(at.dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-          setor: at.setor,
-          tipo: at.tipoAtendimento
-        }));
-        
-        return dadosFormatados;
-      }
-      return []; // Se não houver nada salvo, retorna um array vazio
-    } catch (error) {
-      console.error("Erro ao carregar ou formatar dados do localStorage:", error);
-      return []; // Em caso de erro, retorna um array vazio
-    }
-  });
-
-  // Tenta carregar os atendimentos finalizados do localStorage
-  const [atendimentosFinalizados, setAtendimentosFinalizados] = useState(() => {
-    try {
-      const finalizadosSalvos = localStorage.getItem('atendimentosFinalizados');
-      return finalizadosSalvos ? JSON.parse(finalizadosSalvos) : [];
-    } catch (error) {
-      return [];
-    }
-  });
-  
+  const [filaDeSenhas, setFilaDeSenhas] = useState([]);
+  const [atendimentosFinalizados, setAtendimentosFinalizados] = useState([]);
   const [atendimentoEmAndamento, setAtendimentoEmAndamento] = useState(false);
-  const [chamadaStatus, setChamadaStatus] = useState('idle'); // 'idle', 'chamando_1', 'expirado_1', 'chamando_2', 'expirado_2'
+  const [chamadaStatus, setChamadaStatus] = useState('idle');
 
-  const senhaAtual = filaDeSenhas.length > 0 ? filaDeSenhas[0] : null;
-
-  // --- EFEITOS PARA PERSISTÊNCIA DE DADOS ---
-
-  // Salva a fila de volta no localStorage sempre que ela mudar
   useEffect(() => {
-    const chaveDoDia = getChaveDoDia();
-    // NOTA: Aqui estamos salvando os dados já formatados.
-    // O ideal seria ter uma única fonte de verdade, mas para manter a funcionalidade,
-    // vamos apenas atualizar a lista com os itens restantes.
-    localStorage.setItem(chaveDoDia, JSON.stringify(filaDeSenhas));
-  }, [filaDeSenhas]);
+    socket.on('fila-inicial', (fila) => {
+      setFilaDeSenhas(fila);
+    });
+    socket.on('finalizados-inicial', (finalizados) => {
+        setAtendimentosFinalizados(finalizados);
+    });
 
-  // Salva os atendimentos finalizados no localStorage sempre que a lista mudar
-  useEffect(() => {
-    localStorage.setItem('atendimentosFinalizados', JSON.stringify(atendimentosFinalizados));
-  }, [atendimentosFinalizados]);
+    socket.on('atualizar-fila', (novaFila) => {
+      setFilaDeSenhas(novaFila);
+    });
 
-  // Limpa o timer caso o componente seja desmontado
+    return () => {
+      socket.off('fila-inicial');
+      socket.off('finalizados-inicial');
+      socket.off('atualizar-fila');
+    };
+  }, []); 
+
   useEffect(() => {
     return () => clearTimeout(timerRef.current);
   }, []);
 
-  // --- FUNÇÕES DE LÓGICA ---
+  const senhaAtual = filaDeSenhas.length > 0 ? filaDeSenhas[0] : null;
 
   const finalizarAtendimento = (status) => {
     if (!senhaAtual) return;
@@ -293,20 +247,18 @@ function Adm() {
     const agora = new Date();
     const atendimentoConcluido = {
       ...senhaAtual,
-      status, // 'Concluído' ou 'Não Compareceu'
-      data: agora.toISOString().split('T')[0], // Formato YYYY-MM-DD
+      status,
+      data: agora.toISOString().split('T')[0],
       horaFinalizacao: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
     };
     
-    setAtendimentosFinalizados(prev => [...prev, atendimentoConcluido]);
-    setFilaDeSenhas(prevFila => prevFila.slice(1));
-    
-    // Reseta todos os estados de controle
+    socket.emit('finalizar-atendimento', atendimentoConcluido);
+
     setAtendimentoEmAndamento(false);
     setChamadaStatus('idle');
     clearTimeout(timerRef.current);
   };
-  
+
   const iniciarTimer = (proximoStatusExpirado) => {
     clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
@@ -370,7 +322,6 @@ function Adm() {
     navigate('/');
   };
   
-  // --- RENDERIZAÇÃO DOS BOTÕES DE AÇÃO ---
   const renderizarAcoes = () => {
     if (!senhaAtual) return null;
 
@@ -422,15 +373,12 @@ function Adm() {
      <>
        <style>{styles}</style>
        <div className="adm-container">
-         {/* barra de navegação */}
          <header className="adm-navbar">
            <span className="adm-logo-principal"></span>
-           <button className="adm-btn" onClick={() => navigate('/')}>Gerar nova senha</button>
+           <button className="adm-btn" onClick={handleGerarSenha}>Gerar nova senha</button>
          </header>
 
-         {/* body da página */}
          <main className="adm-main">
-
            <h2 className="adm-subtitle">Próximo atendimento</h2>
            
            <div className="adm-content">
@@ -447,27 +395,22 @@ function Adm() {
                        <span className="adm-client-name">{senhaAtual.nome}</span>
                        <span className="adm-client-label">Cliente</span>
                      </div>
-
                      <div className="adm-password">
                        <span className="adm-password-value">{senhaAtual.senha}</span>
                        <span className="adm-password-label">Senha</span>
                      </div>
-
                      <div className="adm-hour">
                        <span className="adm-hour-value">{senhaAtual.hora}</span>
                        <span className="adm-hour-label">Hora</span>
                      </div>
-
                      <div className="adm-id">
                        <span className="adm-id-value">{senhaAtual.id}</span>
                        <span className="adm-id-label">Id (CPF)</span>
                      </div>
-
                      <div className="adm-sector">
                        <span className="adm-sector-value">{senhaAtual.setor}</span>
                        <span className="adm-sector-label">Setor</span>
                      </div>
-
                      <div className="adm-type">
                        <span className="adm-type-value">{senhaAtual.tipo}</span>
                        <span className="adm-type-label">Tipo</span>

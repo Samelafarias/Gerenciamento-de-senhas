@@ -203,21 +203,13 @@ function Ticket() {
   const navigate = useNavigate();
   const [ticketData, setTicketData] = useState(null);
 
-  // --- USEEFFECT ATUALIZADO ---
   useEffect(() => {
-    // A única mudança é aqui: lê da nova chave temporária
+
     const savedDataString = localStorage.getItem('ultimoAtendimentoGerado');
 
     if (savedDataString) {
       const parsedData = JSON.parse(savedDataString);
-      
-      const timestamp = new Date(parsedData.dataHora).getTime();
-      parsedData.senha = `${parsedData.tipoAtendimento.charAt(0)}-${timestamp.toString().slice(-4)}`;
-      parsedData.id = timestamp;
-      parsedData.hora = new Date(parsedData.dataHora).toLocaleTimeString('pt-BR', {
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+
       
       setTicketData(parsedData);
     }
@@ -244,7 +236,6 @@ function Ticket() {
         </header>
 
         <main className="ticket-main">
-          {/* Seta para voltar para a página de dados e corrigir algo */}
           <div className="ticket-back" onClick={() => navigate(-1)}></div>
 
           <div className="ticket-content">
@@ -276,7 +267,8 @@ function Ticket() {
                   <span className="label">Setor</span>
                 </div>
                 <div className="ticket-type">
-                  <span className="value">{ticketData.tipoAtendimento}</span>
+                  {/* CORREÇÃO: Usando 'tipo' que é a propriedade correta do objeto */}
+                  <span className="value">{ticketData.tipo}</span>
                   <span className="label">Tipo</span>
                 </div>
               </div>
