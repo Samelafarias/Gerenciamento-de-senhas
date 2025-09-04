@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-
 function Visor() {
   const [senhasChamadas, setSenhasChamadas] = useState([]);
 
+  // Função para carregar os dados do localStorage da chave correta
   const carregarSenhas = () => {
     try {
-      const dadosSalvos = localStorage.getItem('senhasChamadas');
+      // CORREÇÃO: Lendo da chave 'atendimentosFinalizados'
+      const dadosSalvos = localStorage.getItem('atendimentosFinalizados');
       if (dadosSalvos) {
         setSenhasChamadas(JSON.parse(dadosSalvos));
       }
@@ -17,29 +18,33 @@ function Visor() {
   };
 
   useEffect(() => {
-
+    // Carrega os dados na primeira vez que o componente é montado
     carregarSenhas();
 
+    // Adiciona um "ouvinte" que atualiza a página em tempo real
+    // se a chave 'atendimentosFinalizados' for alterada em outra aba
     const handleStorageChange = (event) => {
-      if (event.key === 'senhasChamadas') {
+      // CORREÇÃO: Ouvindo a chave 'atendimentosFinalizados'
+      if (event.key === 'atendimentosFinalizados') {
         carregarSenhas();
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
 
+    // Limpa o "ouvinte" quando o componente é desmontado
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []); 
 
-
+  // A senha principal é a última a ser chamada (último item do array)
   const senhaPrincipal = senhasChamadas.length > 0 ? senhasChamadas[senhasChamadas.length - 1] : null;
+  // As últimas senhas são as 3 anteriores à principal
   const ultimasSenhas = senhasChamadas.length > 1 ? senhasChamadas.slice(-4, -1).reverse() : [];
 
   return (
     <>
-      {}
       <style>
         {`
           * {
@@ -221,8 +226,9 @@ function Visor() {
               </div>
 
               <div className="visor-sector">
-                <span className="visor-sector-value">{senhaPrincipal?.guiche || '---'}</span>
-                <span className="visor-sector-label">Guichê</span>
+                {/* CORREÇÃO: Usando 'setor' ao invés de 'guiche' */}
+                <span className="visor-sector-value">{senhaPrincipal?.setor || '---'}</span>
+                <span className="visor-sector-label">Setor</span>
               </div>
 
               {/* linha 3 do card */}
@@ -249,28 +255,29 @@ function Visor() {
                   <span className="visor-last-password-label">Senha:</span>
                   <span className="visor-last-password-value">{senha.senha}</span>
 
-                  <span className="visor-last-sector-label">Guichê:</span>
-                  <span className="visor-last-sector-value">{senha.guiche}</span>
+                  {/* CORREÇÃO: Usando 'setor' ao invés de 'guiche' */}
+                  <span className="visor-last-sector-label">Setor:</span>
+                  <span className="visor-last-sector-value">{senha.setor}</span>
                   
                   <div className="visor-last-footer">
                     <span>{senha.hora}</span>
-                    <span>{senha.data}</span>
+                    <span>{new Date(senha.data).toLocaleDateString('pt-BR')}</span>
                   </div>
                 </div>
               ))}
               {/* Adiciona placeholders se houver menos de 3 senhas */}
               {Array.from({ length: 3 - ultimasSenhas.length }).map((_, index) => (
-                 <div className="visor-last-card" key={`placeholder-${index}`} style={{opacity: 0.5}}>
-                  <span className="visor-last-client-name">Aguardando...</span>
-                  <span className="visor-last-password-label">Senha:</span>
-                  <span className="visor-last-password-value">---</span>
-                  <span className="visor-last-sector-label">Guichê:</span>
-                  <span className="visor-last-sector-value">---</span>
-                  <div className="visor-last-footer">
-                    <span>--:--</span>
-                    <span>--/--/----</span>
+                  <div className="visor-last-card" key={`placeholder-${index}`} style={{opacity: 0.5}}>
+                    <span className="visor-last-client-name">Aguardando...</span>
+                    <span className="visor-last-password-label">Senha:</span>
+                    <span className="visor-last-password-value">---</span>
+                    <span className="visor-last-sector-label">Setor:</span>
+                    <span className="visor-last-sector-value">---</span>
+                    <div className="visor-last-footer">
+                      <span>--:--</span>
+                      <span>--/--/----</span>
+                    </div>
                   </div>
-                </div>
               ))}
             </div>
           </div>
