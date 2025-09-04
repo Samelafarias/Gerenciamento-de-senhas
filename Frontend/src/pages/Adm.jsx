@@ -204,14 +204,16 @@ const styles = `
   }
 `;
 
-// Dados de exemplo caso o localStorage esteja vazio
-const DADOS_INICIAIS = [
-    { id: 'uuid-1', nome: 'Maria da Silva', senha: 'P001', hora: '10:30', setor: 'Guichê 1', tipo: 'Prioritário' },
-    { id: 'uuid-2', nome: 'João Pereira', senha: 'C002', hora: '10:32', setor: 'Guichê 2', tipo: 'Convencional' },
-    { id: 'uuid-3', nome: 'Ana Costa', senha: 'C003', hora: '10:35', setor: 'Guichê 1', tipo: 'Convencional' },
-];
+// FUNÇÃO PARA PEGAR A CHAVE DO LOCALSTORAGE - IGUAL A DA PÁGINA 'Dados'
+const getChaveDoDia = () => {
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+  const dia = String(hoje.getDate()).padStart(2, '0');
+  return `atendimentos_${ano}-${mes}-${dia}`;
+};
 
-const TEMPO_ESPERA = 5000; // 30 segundos em milissegundos
+const TEMPO_ESPERA = 5000; // 5 segundos em milissegundos
 
 function Adm() {
   const navigate = useNavigate();
@@ -219,13 +221,31 @@ function Adm() {
 
   // --- ESTADO DA APLICAÇÃO ---
 
-  // Tenta carregar a fila do localStorage ou usa os dados iniciais
+  // Tenta carregar a fila do localStorage ou inicia uma fila vazia
   const [filaDeSenhas, setFilaDeSenhas] = useState(() => {
     try {
-      const filaSalva = localStorage.getItem('filaDeSenhas');
-      return filaSalva ? JSON.parse(filaSalva) : DADOS_INICIAIS;
+      const chaveDoDia = getChaveDoDia();
+      const atendimentosSalvos = localStorage.getItem(chaveDoDia);
+
+      if (atendimentosSalvos) {
+        const dadosOriginais = JSON.parse(atendimentosSalvos);
+        
+        // Transforma os dados para o formato que a página Adm espera
+        const dadosFormatados = dadosOriginais.map((at, index) => ({
+          id: at.cpf, // Usa o CPF como ID único
+          nome: at.nome,
+          senha: `${at.tipoAtendimento === 'Prioritário' ? 'P' : 'C'}${(index + 1).toString().padStart(3, '0')}`,
+          hora: new Date(at.dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+          setor: at.setor,
+          tipo: at.tipoAtendimento
+        }));
+        
+        return dadosFormatados;
+      }
+      return []; // Se não houver nada salvo, retorna um array vazio
     } catch (error) {
-      return DADOS_INICIAIS;
+      console.error("Erro ao carregar ou formatar dados do localStorage:", error);
+      return []; // Em caso de erro, retorna um array vazio
     }
   });
 
@@ -240,16 +260,19 @@ function Adm() {
   });
   
   const [atendimentoEmAndamento, setAtendimentoEmAndamento] = useState(false);
-  // Novo estado para controlar o fluxo de chamada com timeout
   const [chamadaStatus, setChamadaStatus] = useState('idle'); // 'idle', 'chamando_1', 'expirado_1', 'chamando_2', 'expirado_2'
 
   const senhaAtual = filaDeSenhas.length > 0 ? filaDeSenhas[0] : null;
 
   // --- EFEITOS PARA PERSISTÊNCIA DE DADOS ---
 
-  // Salva a fila no localStorage sempre que ela mudar
+  // Salva a fila de volta no localStorage sempre que ela mudar
   useEffect(() => {
-    localStorage.setItem('filaDeSenhas', JSON.stringify(filaDeSenhas));
+    const chaveDoDia = getChaveDoDia();
+    // NOTA: Aqui estamos salvando os dados já formatados.
+    // O ideal seria ter uma única fonte de verdade, mas para manter a funcionalidade,
+    // vamos apenas atualizar a lista com os itens restantes.
+    localStorage.setItem(chaveDoDia, JSON.stringify(filaDeSenhas));
   }, [filaDeSenhas]);
 
   // Salva os atendimentos finalizados no localStorage sempre que a lista mudar
@@ -285,7 +308,7 @@ function Adm() {
   };
   
   const iniciarTimer = (proximoStatusExpirado) => {
-    clearTimeout(timerRef.current); // Limpa qualquer timer anterior
+    clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
       setChamadaStatus(proximoStatusExpirado);
     }, TEMPO_ESPERA);
@@ -322,7 +345,7 @@ function Adm() {
   };
   
   const handleGerarRelatorio = () => {
-    const hoje = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    const hoje = new Date().toISOString().split('T')[0];
     const atendimentosDeHoje = atendimentosFinalizados.filter(at => at.data === hoje);
 
     if (atendimentosDeHoje.length === 0) {
@@ -397,79 +420,79 @@ function Adm() {
 
   return (
      <>
-      <style>{styles}</style>
-      <div className="adm-container">
-        {/* barra de navegação */}
-        <header className="adm-navbar">
-          <span className="adm-logo-principal"></span>
-          <button className="adm-btn" onClick={handleGerarSenha}>Gerar nova senha</button>
-        </header>
+       <style>{styles}</style>
+       <div className="adm-container">
+         {/* barra de navegação */}
+         <header className="adm-navbar">
+           <span className="adm-logo-principal"></span>
+           <button className="adm-btn" onClick={() => navigate('/')}>Gerar nova senha</button>
+         </header>
 
-        {/* body da página */}
-        <main className="adm-main">
+         {/* body da página */}
+         <main className="adm-main">
 
-          <h2 className="adm-subtitle">Próximo atendimento</h2>
-          
-          <div className="adm-content">
-            <div className="adm-card">
-              {senhaAtual ? (
-                <>
-                  <div className="adm-header">
-                    <span className="adm-logo"></span>
-                    <span className="adm-title">Ticket Gerado</span>
-                  </div>
+           <h2 className="adm-subtitle">Próximo atendimento</h2>
+           
+           <div className="adm-content">
+             <div className="adm-card">
+               {senhaAtual ? (
+                 <>
+                   <div className="adm-header">
+                     <span className="adm-logo"></span>
+                     <span className="adm-title">Ticket Gerado</span>
+                   </div>
 
-                  <div className="adm-info">
-                    <div className="adm-client">
-                      <span className="adm-client-name">{senhaAtual.nome}</span>
-                      <span className="adm-client-label">Cliente</span>
-                    </div>
+                   <div className="adm-info">
+                     <div className="adm-client">
+                       <span className="adm-client-name">{senhaAtual.nome}</span>
+                       <span className="adm-client-label">Cliente</span>
+                     </div>
 
-                    <div className="adm-password">
-                      <span className="adm-password-value">{senhaAtual.senha}</span>
-                      <span className="adm-password-label">Senha</span>
-                    </div>
+                     <div className="adm-password">
+                       <span className="adm-password-value">{senhaAtual.senha}</span>
+                       <span className="adm-password-label">Senha</span>
+                     </div>
 
-                    <div className="adm-hour">
-                      <span className="adm-hour-value">{senhaAtual.hora}</span>
-                      <span className="adm-hour-label">Hora</span>
-                    </div>
+                     <div className="adm-hour">
+                       <span className="adm-hour-value">{senhaAtual.hora}</span>
+                       <span className="adm-hour-label">Hora</span>
+                     </div>
 
-                    <div className="adm-id">
-                      <span className="adm-id-value">{senhaAtual.id}</span>
-                      <span className="adm-id-label">Id</span>
-                    </div>
+                     <div className="adm-id">
+                       <span className="adm-id-value">{senhaAtual.id}</span>
+                       <span className="adm-id-label">Id (CPF)</span>
+                     </div>
 
-                    <div className="adm-sector">
-                      <span className="adm-sector-value">{senhaAtual.setor}</span>
-                      <span className="adm-sector-label">Setor</span>
-                    </div>
+                     <div className="adm-sector">
+                       <span className="adm-sector-value">{senhaAtual.setor}</span>
+                       <span className="adm-sector-label">Setor</span>
+                     </div>
 
-                    <div className="adm-type">
-                      <span className="adm-type-value">{senhaAtual.tipo}</span>
-                      <span className="adm-type-label">Tipo</span>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="adm-header" style={{ justifyContent: 'center', marginBottom: 0 }}>
-                  <span className="adm-title" style={{ fontSize: '24px' }}>Fila de atendimentos vazia!</span>
-                </div>
-              )}
-            </div>
-          </div>
+                     <div className="adm-type">
+                       <span className="adm-type-value">{senhaAtual.tipo}</span>
+                       <span className="adm-type-label">Tipo</span>
+                     </div>
+                   </div>
+                 </>
+               ) : (
+                 <div className="adm-header" style={{ justifyContent: 'center', marginBottom: 0 }}>
+                   <span className="adm-title" style={{ fontSize: '24px' }}>Fila de atendimentos vazia!</span>
+                 </div>
+               )}
+             </div>
+           </div>
 
-          <div className="adm-bottom-actions">
-            <div className="adm-left-actions">
-              {renderizarAcoes()}
-            </div>
-            <button className="adm-finish-btn" onClick={handleGerarRelatorio}>Gerar relatório diário</button>
-          </div>
-        </main>
+           <div className="adm-bottom-actions">
+             <div className="adm-left-actions">
+               {renderizarAcoes()}
+             </div>
+             <button className="adm-finish-btn" onClick={handleGerarRelatorio}>Gerar relatório diário</button>
+           </div>
+         </main>
 
-        <footer className="footer"></footer>
-      </div>
-    </>
+         <footer className="footer"></footer>
+       </div>
+     </>
   );
 }
 
