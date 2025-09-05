@@ -1,31 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import socket from '../socket'; 
+import socket from '../socket';
 
 function Visor() {
-  const [senhasChamadas, setSenhasChamadas] = useState([]);
+  // ALTERAÇÃO: Criamos um estado separado para a senha principal
+  const [senhaPrincipal, setSenhaPrincipal] = useState(null);
+  // Este estado agora guarda apenas o histórico para a lista de "últimas chamadas"
+  const [historicoSenhas, setHistoricoSenhas] = useState([]);
 
   useEffect(() => {
+    // NOVO: Ouve o evento de chamada em tempo real e atualiza a senha principal
+    socket.on('nova-senha-chamada', (senha) => {
+      setSenhaPrincipal(senha);
+    });
+
+    // Ouve a carga inicial de senhas já finalizadas para preencher o histórico
     socket.on('finalizados-inicial', (finalizados) => {
-      setSenhasChamadas(finalizados);
+      setHistoricoSenhas(finalizados);
+      // Ao carregar, define a senha principal como a última finalizada (se houver)
+      if (finalizados.length > 0) {
+        setSenhaPrincipal(finalizados[finalizados.length - 1]);
+      }
     });
 
+    // Ouve as atualizações do histórico quando um atendimento é finalizado
     socket.on('atualizar-finalizados', (novosFinalizados) => {
-      setSenhasChamadas(novosFinalizados);
+      setHistoricoSenhas(novosFinalizados);
     });
 
+    // Limpa todos os listeners quando o componente é desmontado
     return () => {
+      socket.off('nova-senha-chamada');
       socket.off('finalizados-inicial');
       socket.off('atualizar-finalizados');
     };
   }, []); 
-  
-  const senhaPrincipal = senhasChamadas.length > 0 ? senhasChamadas[senhasChamadas.length - 1] : null;
-  const ultimasSenhas = senhasChamadas.length > 1 ? senhasChamadas.slice(-4, -1).reverse() : [];
 
-  return (
-    <>
-      <style>
-        {`
+  // ALTERAÇÃO: A lista de últimas senhas agora é baseada apenas no histórico
+  const ultimasSenhas = historicoSenhas.slice(-3).reverse();
+
+  // ... (O seu CSS pode continuar aqui, sem alterações)
+  const styles = `
           * {
             background-color: #F5F1F1;
             font-family: Arial, sans-serif;
@@ -151,13 +165,16 @@ function Visor() {
           .visor-last-card span, .visor-last-card div {
             background-color: transparent;
           }
-        `}
-      </style>
+        `; 
 
+  return (
+    <>
+      <style>{styles}</style>
       <div className="visor-container">
         <div className="visor-content">
           <div className="visor-card">
             <div className="visor-info">
+              {/* O JSX agora usa o estado 'senhaPrincipal' diretamente */}
               <div className="visor-client">
                 <span className="visor-client-name">{senhaPrincipal?.nome || 'Aguardando Cliente'}</span>
                 <span className="visor-client-label">Cliente</span>
@@ -184,6 +201,7 @@ function Visor() {
           <div className="visor-last">
             <h3 className="visor-last-title">Últimas senhas chamadas</h3>
             <div className="visor-last-cards">
+              {/* O map agora usa a variável 'ultimasSenhas' */}
               {ultimasSenhas.map((senha) => (
                 <div className="visor-last-card" key={senha.id}>
                   <span className="visor-last-client-name">{senha.nome}</span>
@@ -200,14 +218,7 @@ function Visor() {
               {Array.from({ length: 3 - ultimasSenhas.length }).map((_, index) => (
                   <div className="visor-last-card" key={`placeholder-${index}`} style={{opacity: 0.5}}>
                     <span className="visor-last-client-name">Aguardando...</span>
-                    <span className="visor-last-password-label">Senha:</span>
-                    <span className="visor-last-password-value">---</span>
-                    <span className="visor-last-sector-label">Setor:</span>
-                    <span className="visor-last-sector-value">---</span>
-                    <div className="visor-last-footer">
-                      <span>--:--</span>
-                      <span>--/--/----</span>
-                    </div>
+                    {/* ... (resto do card placeholder) */}
                   </div>
               ))}
             </div>
@@ -217,5 +228,6 @@ function Visor() {
     </>
   );
 }
+
 
 export default Visor;

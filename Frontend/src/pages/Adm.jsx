@@ -217,23 +217,16 @@ function Adm() {
   const [chamadaStatus, setChamadaStatus] = useState('idle');
 
   useEffect(() => {
-    socket.on('fila-inicial', (fila) => {
-      setFilaDeSenhas(fila);
-    });
-    socket.on('finalizados-inicial', (finalizados) => {
-        setAtendimentosFinalizados(finalizados);
-    });
-
-    socket.on('atualizar-fila', (novaFila) => {
-      setFilaDeSenhas(novaFila);
-    });
+    socket.on('fila-inicial', (fila) => setFilaDeSenhas(fila));
+    socket.on('finalizados-inicial', (finalizados) => setAtendimentosFinalizados(finalizados));
+    socket.on('atualizar-fila', (novaFila) => setFilaDeSenhas(novaFila));
 
     return () => {
       socket.off('fila-inicial');
       socket.off('finalizados-inicial');
       socket.off('atualizar-fila');
     };
-  }, []); 
+  }, []);
 
   useEffect(() => {
     return () => clearTimeout(timerRef.current);
@@ -243,7 +236,6 @@ function Adm() {
 
   const finalizarAtendimento = (status) => {
     if (!senhaAtual) return;
-
     const agora = new Date();
     const atendimentoConcluido = {
       ...senhaAtual,
@@ -251,9 +243,7 @@ function Adm() {
       data: agora.toISOString().split('T')[0],
       horaFinalizacao: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
     };
-    
     socket.emit('finalizar-atendimento', atendimentoConcluido);
-
     setAtendimentoEmAndamento(false);
     setChamadaStatus('idle');
     clearTimeout(timerRef.current);
@@ -268,6 +258,9 @@ function Adm() {
 
   const handleIniciarChamada = () => {
     if (senhaAtual && chamadaStatus === 'idle') {
+      // ALTERAÇÃO AQUI: Emite o evento para o visor assim que o botão é clicado
+      socket.emit('chamar-senha', senhaAtual);
+
       setChamadaStatus('chamando_1');
       iniciarTimer('expirado_1');
     }
@@ -275,11 +268,15 @@ function Adm() {
 
   const handleChamarNovamente = () => {
     if (senhaAtual && chamadaStatus === 'expirado_1') {
+       // ALTERAÇÃO AQUI TAMBÉM: Emite o evento novamente na segunda chamada
+      socket.emit('chamar-senha', senhaAtual);
+
       setChamadaStatus('chamando_2');
       iniciarTimer('expirado_2');
     }
   };
 
+  // ... (O resto do arquivo, incluindo handleConfirmarComparecimento, renderizarAcoes e o JSX, continua exatamente igual)
   const handleConfirmarComparecimento = () => {
     clearTimeout(timerRef.current);
     setChamadaStatus('idle');
