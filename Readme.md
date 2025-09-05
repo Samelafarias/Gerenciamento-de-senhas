@@ -17,11 +17,11 @@ O sistema até o presente momento esta funcionando apenas localhost, caso tenha 
 -Marcar o atendimento como "Não Compareceu".
 -Finalizar o atendimento e chamar o próximo da fila.
 
-- **Visor público -** Uma tela de visualização que mostra a última senha chamada e o histórico recente, atualizada instantaneamente assim que o administrador finaliza um atendimento.
+- **Visor público com alerta sonoro-** A tela de visualização é atualizada imediatamente quando um atendente clica em "Realizar Atendimento", tocando um alerta sonoro para notificar os clientes. O histórico de senhas já finalizadas também é exibido.
 
 - **Sincronização Multi-dispositivo -** Graças ao backend com Socket.IO, todas as telas (Totem, Admin, Visor) são sincronizadas em tempo real, mesmo em diferentes computadores ou redes.
 
-- **Relatório diário -** Funcionalidade para o administrador gerar um resumo dos atendimentos do dia.
+- **Relatório diário para Dowloand-** O administrador pode gerar e baixar um relatório completo (.txt) dos atendimentos finalizados no dia, em vez de apenas visualizá-lo em um alerta.
 
 ## 💻 Tecnologias Utilizadas
  **Frontend**
