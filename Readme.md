@@ -12,10 +12,11 @@ O sistema até o presente momento esta funcionando apenas localhost, caso tenha 
 - **Geração de senhas -** Nessa interface o usuário seleciona o tipo de atendimento (convencional ou prioritário), além disso ele irá inserir seus dados para que possam ser chamados.
 
 - **Painel administrativo -** Visualização da fila de espera em tempo real. O atendente pode:
--Chamar o próximo cliente.
--Chamar novamente caso o cliente não apareça.
--Marcar o atendimento como "Não Compareceu".
--Finalizar o atendimento e chamar o próximo da fila.
+  
+  - Chamar o próximo cliente.
+  - Chamar novamente caso o cliente não apareça.
+  - Marcar o atendimento como "Não Compareceu".
+  - Finalizar o atendimento e chamar o próximo da fila.
 
 - **Visor público com alerta sonoro-** A tela de visualização é atualizada imediatamente quando um atendente clica em "Realizar Atendimento", tocando um alerta sonoro para notificar os clientes. O histórico de senhas já finalizadas também é exibido.
 
