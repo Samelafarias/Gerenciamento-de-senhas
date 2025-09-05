@@ -258,7 +258,6 @@ function Adm() {
 
   const handleIniciarChamada = () => {
     if (senhaAtual && chamadaStatus === 'idle') {
-      // ALTERAÇÃO AQUI: Emite o evento para o visor assim que o botão é clicado
       socket.emit('chamar-senha', senhaAtual);
 
       setChamadaStatus('chamando_1');
@@ -268,7 +267,6 @@ function Adm() {
 
   const handleChamarNovamente = () => {
     if (senhaAtual && chamadaStatus === 'expirado_1') {
-       // ALTERAÇÃO AQUI TAMBÉM: Emite o evento novamente na segunda chamada
       socket.emit('chamar-senha', senhaAtual);
 
       setChamadaStatus('chamando_2');
@@ -276,7 +274,6 @@ function Adm() {
     }
   };
 
-  // ... (O resto do arquivo, incluindo handleConfirmarComparecimento, renderizarAcoes e o JSX, continua exatamente igual)
   const handleConfirmarComparecimento = () => {
     clearTimeout(timerRef.current);
     setChamadaStatus('idle');

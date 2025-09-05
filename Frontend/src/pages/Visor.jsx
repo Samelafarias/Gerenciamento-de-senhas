@@ -5,15 +5,12 @@ function Visor() {
   const [senhaPrincipal, setSenhaPrincipal] = useState(null);
   const [historicoSenhas, setHistoricoSenhas] = useState([]);
   
-  // Referência para o elemento de áudio
   const audioRef = useRef(null);
 
   useEffect(() => {
-    // Evento de chamada em tempo real
-    socket.on('nova-senha-chamada', (senha) => {
+  socket.on('nova-senha-chamada', (senha) => {
       setSenhaPrincipal(senha);
-      
-      // Tenta tocar o som diretamente ao receber o evento
+    
       if (audioRef.current) {
         const playPromise = audioRef.current.play();
         if (playPromise !== undefined) {
@@ -25,7 +22,6 @@ function Visor() {
       }
     });
 
-    // Lógica para carregar e atualizar o histórico de senhas finalizadas
     socket.on('finalizados-inicial', (finalizados) => {
       setHistoricoSenhas(finalizados);
       if (finalizados.length > 0) {
@@ -37,7 +33,6 @@ function Visor() {
       setHistoricoSenhas(novosFinalizados);
     });
 
-    // Limpa os listeners ao desmontar o componente
     return () => {
       socket.off('nova-senha-chamada');
       socket.off('finalizados-inicial');
