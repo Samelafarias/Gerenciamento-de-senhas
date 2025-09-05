@@ -294,27 +294,42 @@ function Adm() {
   };
   
   const handleGerarRelatorio = () => {
-    const hoje = new Date().toISOString().split('T')[0];
-    const atendimentosDeHoje = atendimentosFinalizados.filter(at => at.data === hoje);
+    const hoje = new Date();
+    const dataFiltro = hoje.toISOString().split('T')[0]; 
+    const atendimentosDeHoje = atendimentosFinalizados.filter(at => at.data === dataFiltro);
 
     if (atendimentosDeHoje.length === 0) {
       alert("Nenhum atendimento foi finalizado hoje.");
       return;
     }
 
-    let relatorio = `Relatório de Atendimentos do Dia: ${new Date().toLocaleDateString('pt-BR')}\n\n`;
+    let relatorio = `Relatório de Atendimentos do Dia: ${hoje.toLocaleDateString('pt-BR')}\n`;
+    relatorio += `Gerado em: ${hoje.toLocaleTimeString('pt-BR')}\n`;
+    relatorio += `--------------------------------------\n\n`;
+
     atendimentosDeHoje.forEach(at => {
       relatorio += `- Senha: ${at.senha} | Status: ${at.status}\n`;
       relatorio += `  Cliente: ${at.nome}\n`;
       relatorio += `  Tipo: ${at.tipo}\n`;
+      relatorio += `  Setor: ${at.setor}\n`;
       relatorio += `  Hora de Geração: ${at.hora}\n`;
       relatorio += `  Hora de Finalização: ${at.horaFinalizacao}\n`;
       relatorio += `--------------------------------------\n`;
     });
 
-    alert(relatorio);
-  };
+    const blob = new Blob([relatorio], { type: 'text/plain;charset=utf-8' });
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const ano = hoje.getFullYear();
+    const nomeDoArquivo = `relatorio-atendimentos-${dia}-${mes}-${ano}.txt`;
+    const linkDeDownload = document.createElement('a');
+    linkDeDownload.href = URL.createObjectURL(blob);
+    linkDeDownload.download = nomeDoArquivo;
 
+    document.body.appendChild(linkDeDownload);
+    linkDeDownload.click();
+    document.body.removeChild(linkDeDownload);
+  };
   const handleGerarSenha = () => {
     navigate('/');
   };
