@@ -205,7 +205,7 @@ const styles = `
   }
 `;
 
-const TEMPO_ESPERA = 5000; // 5 segundos em milissegundos
+const TEMPO_ESPERA = 7000 // 7 segundos para chamar nova senha
 
 function Adm() {
   const navigate = useNavigate();
