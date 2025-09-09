@@ -207,6 +207,7 @@ const styles = `
 
 const TEMPO_ESPERA = 7000 // 7 segundos para chamar nova senha
 
+
 function Adm() {
   const navigate = useNavigate();
   const timerRef = useRef(null);
@@ -221,10 +222,15 @@ function Adm() {
     socket.on('finalizados-inicial', (finalizados) => setAtendimentosFinalizados(finalizados));
     socket.on('atualizar-fila', (novaFila) => setFilaDeSenhas(novaFila));
 
+    socket.on('atualizar-finalizados', (novosFinalizados) => {
+        setAtendimentosFinalizados(novosFinalizados);
+    });
+
     return () => {
       socket.off('fila-inicial');
       socket.off('finalizados-inicial');
       socket.off('atualizar-fila');
+      socket.off('atualizar-finalizados');
     };
   }, []);
 
@@ -232,7 +238,13 @@ function Adm() {
     return () => clearTimeout(timerRef.current);
   }, []);
 
-  const senhaAtual = filaDeSenhas.length > 0 ? filaDeSenhas[0] : null;
+  const filaOrdenada = [...filaDeSenhas].sort((a, b) => {
+    const numA = parseInt(a.senha.replace(/\D/g, ''), 10);
+    const numB = parseInt(b.senha.replace(/\D/g, ''), 10);
+    return numA - numB;
+  });
+
+  const senhaAtual = filaOrdenada.length > 0 ? filaOrdenada[0] : null;
 
   const finalizarAtendimento = (status) => {
     if (!senhaAtual) return;
@@ -243,6 +255,9 @@ function Adm() {
       data: agora.toISOString().split('T')[0],
       horaFinalizacao: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
     };
+
+    setAtendimentosFinalizados(prevFinalizados => [...prevFinalizados, atendimentoConcluido]);
+
     socket.emit('finalizar-atendimento', atendimentoConcluido);
     setAtendimentoEmAndamento(false);
     setChamadaStatus('idle');
@@ -259,7 +274,6 @@ function Adm() {
   const handleIniciarChamada = () => {
     if (senhaAtual && chamadaStatus === 'idle') {
       socket.emit('chamar-senha', senhaAtual);
-
       setChamadaStatus('chamando_1');
       iniciarTimer('expirado_1');
     }
@@ -268,7 +282,6 @@ function Adm() {
   const handleChamarNovamente = () => {
     if (senhaAtual && chamadaStatus === 'expirado_1') {
       socket.emit('chamar-senha', senhaAtual);
-
       setChamadaStatus('chamando_2');
       iniciarTimer('expirado_2');
     }
@@ -327,6 +340,7 @@ function Adm() {
     linkDeDownload.click();
     document.body.removeChild(linkDeDownload);
   };
+
   const handleGerarSenha = () => {
     navigate('/');
   };
@@ -379,73 +393,74 @@ function Adm() {
   };
 
   return (
-     <>
-       <style>{styles}</style>
-       <div className="adm-container">
-         <header className="adm-navbar">
-           <span className="adm-logo-principal"></span>
-           <button className="adm-btn" onClick={handleGerarSenha}>Gerar nova senha</button>
-         </header>
+    <>
+      <style>{styles}</style>
+      <div className="adm-container">
+        <header className="adm-navbar">
+          <span className="adm-logo-principal"></span>
+          <button className="adm-btn" onClick={handleGerarSenha}>Gerar nova senha</button>
+        </header>
 
-         <main className="adm-main">
-           <h2 className="adm-subtitle">Próximo atendimento</h2>
-           
-           <div className="adm-content">
-             <div className="adm-card">
-               {senhaAtual ? (
-                 <>
-                   <div className="adm-header">
-                     <span className="adm-logo"></span>
-                     <span className="adm-title">Ticket Gerado</span>
-                   </div>
+        <main className="adm-main">
+          <h2 className="adm-subtitle">Próximo atendimento</h2>
+          
+          <div className="adm-content">
+            <div className="adm-card">
+              {senhaAtual ? (
+                <>
+                  <div className="adm-header">
+                    <span className="adm-logo"></span>
+                    <span className="adm-title">Ticket Gerado</span>
+                  </div>
 
-                   <div className="adm-info">
-                     <div className="adm-client">
-                       <span className="adm-client-name">{senhaAtual.nome}</span>
-                       <span className="adm-client-label">Cliente</span>
-                     </div>
-                     <div className="adm-password">
-                       <span className="adm-password-value">{senhaAtual.senha}</span>
-                       <span className="adm-password-label">Senha</span>
-                     </div>
-                     <div className="adm-hour">
-                       <span className="adm-hour-value">{senhaAtual.hora}</span>
-                       <span className="adm-hour-label">Hora</span>
-                     </div>
-                     <div className="adm-id">
-                       <span className="adm-id-value">{senhaAtual.id}</span>
-                       <span className="adm-id-label">Id (CPF)</span>
-                     </div>
-                     <div className="adm-sector">
-                       <span className="adm-sector-value">{senhaAtual.setor}</span>
-                       <span className="adm-sector-label">Setor</span>
-                     </div>
-                     <div className="adm-type">
-                       <span className="adm-type-value">{senhaAtual.tipo}</span>
-                       <span className="adm-type-label">Tipo</span>
-                     </div>
-                   </div>
-                 </>
-               ) : (
-                 <div className="adm-header" style={{ justifyContent: 'center', marginBottom: 0 }}>
-                   <span className="adm-title" style={{ fontSize: '24px' }}>Fila de atendimentos vazia!</span>
-                 </div>
-               )}
-             </div>
-           </div>
+                  <div className="adm-info">
+                    <div className="adm-client">
+                      <span className="adm-client-name">{senhaAtual.nome}</span>
+                      <span className="adm-client-label">Cliente</span>
+                    </div>
+                    <div className="adm-password">
+                      <span className="adm-password-value">{senhaAtual.senha}</span>
+                      <span className="adm-password-label">Senha</span>
+                    </div>
+                    <div className="adm-hour">
+                      <span className="adm-hour-value">{senhaAtual.hora}</span>
+                      <span className="adm-hour-label">Hora</span>
+                    </div>
+                    <div className="adm-id">
+                      <span className="adm-id-value">{senhaAtual.id}</span>
+                      <span className="adm-id-label">Id (CPF)</span>
+                    </div>
+                    <div className="adm-sector">
+                      <span className="adm-sector-value">{senhaAtual.setor}</span>
+                      <span className="adm-sector-label">Setor</span>
+                    </div>
+                    <div className="adm-type">
+                      <span className="adm-type-value">{senhaAtual.tipo}</span>
+                      <span className="adm-type-label">Tipo</span>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="adm-header" style={{ justifyContent: 'center', marginBottom: 0 }}>
+                  <span className="adm-title" style={{ fontSize: '24px' }}>Fila de atendimentos vazia!</span>
+                </div>
+              )}
+            </div>
+          </div>
 
-           <div className="adm-bottom-actions">
-             <div className="adm-left-actions">
-               {renderizarAcoes()}
-             </div>
-             <button className="adm-finish-btn" onClick={handleGerarRelatorio}>Gerar relatório diário</button>
-           </div>
-         </main>
+          <div className="adm-bottom-actions">
+            <div className="adm-left-actions">
+              {renderizarAcoes()}
+            </div>
+            <button className="adm-finish-btn" onClick={handleGerarRelatorio}>Gerar relatório diário</button>
+          </div>
+        </main>
 
-         <footer className="footer"></footer>
-       </div>
-     </>
+        <footer className="footer"></footer>
+      </div>
+    </>
   );
 }
 
 export default Adm;
+
