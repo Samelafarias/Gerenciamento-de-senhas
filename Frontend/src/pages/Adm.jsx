@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import socket from '../socket'; 
 
-
 const styles = `
 * {
     background-color: #F5F1F1;
@@ -207,7 +206,6 @@ const styles = `
 
 const TEMPO_ESPERA = 7000 // 7 segundos para chamar nova senha
 
-
 function Adm() {
   const navigate = useNavigate();
   const timerRef = useRef(null);
@@ -221,7 +219,6 @@ function Adm() {
     socket.on('fila-inicial', (fila) => setFilaDeSenhas(fila));
     socket.on('finalizados-inicial', (finalizados) => setAtendimentosFinalizados(finalizados));
     socket.on('atualizar-fila', (novaFila) => setFilaDeSenhas(novaFila));
-
     socket.on('atualizar-finalizados', (novosFinalizados) => {
         setAtendimentosFinalizados(novosFinalizados);
     });
@@ -463,4 +460,3 @@ function Adm() {
 }
 
 export default Adm;
-
