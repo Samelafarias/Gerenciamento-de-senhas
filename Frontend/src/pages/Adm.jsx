@@ -204,18 +204,29 @@ const styles = `
   }
 `;
 
+
+// constante que define o tempo de espera (em milissegundos) para o cliente aparecer após a chamada.
 const TEMPO_ESPERA = 7000 // 7 segundos para chamar nova senha
 
+
+// componente principal da página de administração.
 function Adm() {
   const navigate = useNavigate();
+    // useRef é usado para guardar a referência do timer (setTimeout).
+  // isso permite que o timer seja cancelado a qualquer momento, sem causar uma nova renderização.
   const timerRef = useRef(null);
 
-  const [filaDeSenhas, setFilaDeSenhas] = useState([]);
-  const [atendimentosFinalizados, setAtendimentosFinalizados] = useState([]);
-  const [atendimentoEmAndamento, setAtendimentoEmAndamento] = useState(false);
-  const [chamadaStatus, setChamadaStatus] = useState('idle');
+  
+  //GERENCIAMENTO DE ESTADO (useState)
+  const [filaDeSenhas, setFilaDeSenhas] = useState([]);// armazena a fila de senhas recebida do servidor.
+  const [atendimentosFinalizados, setAtendimentosFinalizados] = useState([]);// armazena os atendimentos já finalizados.
+  const [atendimentoEmAndamento, setAtendimentoEmAndamento] = useState(false);// flag que indica se o atendente está ocupado com um cliente.
+  const [chamadaStatus, setChamadaStatus] = useState('idle');// controla a máquina de estados do processo de chamada.
 
+    //EFEITOS (useEffect)
+     // esse useEffect configura a comunicação com o servidor via Socket.IO.
   useEffect(() => {
+     // define "ouvintes" para os eventos vindos do servidor.
     socket.on('fila-inicial', (fila) => setFilaDeSenhas(fila));
     socket.on('finalizados-inicial', (finalizados) => setAtendimentosFinalizados(finalizados));
     socket.on('atualizar-fila', (novaFila) => setFilaDeSenhas(novaFila));
@@ -223,29 +234,41 @@ function Adm() {
         setAtendimentosFinalizados(novosFinalizados);
     });
 
+    // função de limpeza: é executada quando o componente é "desmontado".
+    // remove os "ouvintes" para evitar vazamentos de memória.
     return () => {
       socket.off('fila-inicial');
       socket.off('finalizados-inicial');
       socket.off('atualizar-fila');
       socket.off('atualizar-finalizados');
     };
-  }, []);
+  }, []); // o array vazio [] garante que este efeito rode apenas uma vez (na montagem do componente).
 
+   // este useEffect garante que qualquer timer ativo seja limpo quando o componente for desmontado.
   useEffect(() => {
     return () => clearTimeout(timerRef.current);
   }, []);
 
+  
+  //DADOS DERIVADOS
+
+  // cria uma cópia ordenada da fila de senhas para garantir que o próximo atendimento seja sempre o correto.
   const filaOrdenada = [...filaDeSenhas].sort((a, b) => {
     const numA = parseInt(a.senha.replace(/\D/g, ''), 10);
     const numB = parseInt(b.senha.replace(/\D/g, ''), 10);
     return numA - numB;
   });
 
+   // pega o primeiro item da fila ordenada, que é a senha do próximo cliente a ser atendido.
   const senhaAtual = filaOrdenada.length > 0 ? filaOrdenada[0] : null;
 
+   // FUNÇÕES DE LÓGICA 
+
+  //finaliza o atendimento atual, define um status, e notifica o servidor.
   const finalizarAtendimento = (status) => {
-    if (!senhaAtual) return;
+    if (!senhaAtual) return; // Não faz nada se não houver senha atual.
     const agora = new Date();
+    // cria um objeto com os dados do atendimento concluído.
     const atendimentoConcluido = {
       ...senhaAtual,
       status,
@@ -253,56 +276,68 @@ function Adm() {
       horaFinalizacao: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
     };
 
+        // atualiza o estado local de finalizados.
     setAtendimentosFinalizados(prevFinalizados => [...prevFinalizados, atendimentoConcluido]);
-
+// envia o atendimento concluído para o servidor, para que ele atualize a fila para todos.
     socket.emit('finalizar-atendimento', atendimentoConcluido);
+
+    // reseta o estado da interface para o estado inicial, pronto para o próximo cliente.
     setAtendimentoEmAndamento(false);
     setChamadaStatus('idle');
     clearTimeout(timerRef.current);
   };
 
+    // função auxiliar para iniciar o temporizador de espera.
   const iniciarTimer = (proximoStatusExpirado) => {
     clearTimeout(timerRef.current);
+      // inicia um novo timer que mudará o estado da chamada após TEMPO_ESPERA.
     timerRef.current = setTimeout(() => {
       setChamadaStatus(proximoStatusExpirado);
     }, TEMPO_ESPERA);
   };
 
+  // handler para o botão "Realizar Atendimento".
   const handleIniciarChamada = () => {
     if (senhaAtual && chamadaStatus === 'idle') {
-      socket.emit('chamar-senha', senhaAtual);
-      setChamadaStatus('chamando_1');
-      iniciarTimer('expirado_1');
+      socket.emit('chamar-senha', senhaAtual); // notifica o servidor para exibir a senha no painel.
+      setChamadaStatus('chamando_1');// muda o estado para a primeira chamada.
+      iniciarTimer('expirado_1');// inicia o timer; se expirar, muda o status para 'expirado_1'.
     }
   };
 
+   // handler para o botão "Chamar Novamente".
   const handleChamarNovamente = () => {
     if (senhaAtual && chamadaStatus === 'expirado_1') {
-      socket.emit('chamar-senha', senhaAtual);
-      setChamadaStatus('chamando_2');
-      iniciarTimer('expirado_2');
+      socket.emit('chamar-senha', senhaAtual);//  chama a mesma senha novamente.
+      setChamadaStatus('chamando_2');// muda o estado para a segunda chamada.
+      iniciarTimer('expirado_2');// inicia o timer novamente.
     }
   };
 
+    // handler para o botão "Confirmar Comparecimento".
   const handleConfirmarComparecimento = () => {
-    clearTimeout(timerRef.current);
-    setChamadaStatus('idle');
-    setAtendimentoEmAndamento(true);
+    clearTimeout(timerRef.current);// cliente chegou, então o timer é cancelado.
+    setChamadaStatus('idle');// reseta o estado da chamada.
+    setAtendimentoEmAndamento(true);// indica que o atendimento está ativo.
   };
 
+   // handler para quando o cliente não comparece após a segunda chamada.
   const handleNaoCompareceu = () => {
     finalizarAtendimento('Não Compareceu');
   };
   
+  // handler para o botão "Finalizar e Chamar Próxima".
   const handleChamarProxima = () => {
     if (atendimentoEmAndamento) {
       finalizarAtendimento('Concluído');
     }
   };
   
+   // gera um relatório em .txt com os atendimentos do dia e inicia o download.
   const handleGerarRelatorio = () => {
     const hoje = new Date();
     const dataFiltro = hoje.toISOString().split('T')[0]; 
+    // filtra apenas os atendimentos finalizados na data de hoje.
     const atendimentosDeHoje = atendimentosFinalizados.filter(at => at.data === dataFiltro);
 
     if (atendimentosDeHoje.length === 0) {
@@ -310,6 +345,7 @@ function Adm() {
       return;
     }
 
+    // monta o conteúdo do arquivo de texto.
     let relatorio = `Relatório de Atendimentos do Dia: ${hoje.toLocaleDateString('pt-BR')}\n`;
     relatorio += `Gerado em: ${hoje.toLocaleTimeString('pt-BR')}\n`;
     relatorio += `--------------------------------------\n\n`;
@@ -324,6 +360,8 @@ function Adm() {
       relatorio += `--------------------------------------\n`;
     });
 
+    
+    // lógica para criar um arquivo "Blob" e simular um clique em um link para fazer o download.
     const blob = new Blob([relatorio], { type: 'text/plain;charset=utf-8' });
     const dia = String(hoje.getDate()).padStart(2, '0');
     const mes = String(hoje.getMonth() + 1).padStart(2, '0');
@@ -338,13 +376,18 @@ function Adm() {
     document.body.removeChild(linkDeDownload);
   };
 
+  // navega para a página de gerar senha.
   const handleGerarSenha = () => {
     navigate('/');
   };
   
-  const renderizarAcoes = () => {
-    if (!senhaAtual) return null;
+    // RENDERIZAÇÃO CONDICIONAL
 
+  // esta função decide quais botões de ação devem ser exibidos com base no estado atual do atendimento.
+  const renderizarAcoes = () => {
+    if (!senhaAtual) return null; // Se não há senha, não renderiza nada.
+
+     // se um atendimento está em andamento, mostra apenas o botão de finalizar.
     if (atendimentoEmAndamento) {
       return (
         <button className="adm-next-btn" onClick={handleChamarProxima}>
@@ -353,6 +396,7 @@ function Adm() {
       );
     }
     
+     // usa um switch para verificar o estado da chamada e renderizar os botões correspondentes.
     switch(chamadaStatus) {
       case 'idle':
         return (
