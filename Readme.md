@@ -8,6 +8,8 @@ Esse foi um projeto construido com uma arquitetura cliente-servidor, utilizando 
 ## 🚀 Demonstração ao Vivo
 O sistema até o presente momento esta funcionando apenas localhost, caso tenha curiosidade em ver como fuciona basta seguir o passo a passo abaixo. 
 
+`OBSERVAÇÃO:` Para que tenha uma melhor experiência testando o sistema, utilize mais de uma tela se possível, principalmente na parte do visor.
+
 ## 🌟 Funcionalidades Principais
 - **Geração de senhas -** Nessa interface o usuário seleciona o tipo de atendimento (convencional ou prioritário), além disso ele irá inserir seus dados para que possam ser chamados.
 
