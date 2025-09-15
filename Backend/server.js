@@ -34,10 +34,8 @@ io.on('connection', (socket) => {
     io.emit('atualizar-fila', filaDeAtendimento);
   });
 
-  // NOVO: Ouve o evento de chamada do admin e retransmite para o visor
   socket.on('chamar-senha', (senhaChamada) => {
     console.log('Senha chamada no painel:', senhaChamada.senha);
-    // Este evento será ouvido apenas pela página do visor
     io.emit('nova-senha-chamada', senhaChamada);
   });
 
