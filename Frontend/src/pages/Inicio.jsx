@@ -113,19 +113,31 @@ const styles = `
   }
 `;
 
+// componente funcional que renderiza a página inicial.
 function Inicio() {
+    // inicializa o hook de navegação. A variável 'navigate' agora é uma função.
   const navigate = useNavigate();
 
+   // MANIPULADORES DE EVENTOS (HANDLERS)
+
+  // função chamada quando o botão "Administrador" é clicado.
   const handleAdminClick = () => {
+       // redireciona o usuário para la rota '/Adm'.
     navigate('/Adm');
   };
 
+  //  função chamada quando um dos botões de tipo de atendimento é clicado.
   const handleAtendimentoClick = (tipo) => {
+     // ponto crucial da lógica: Salva o tipo de atendimento no localStorage do navegador.
+    // a próxima tela (componente 'Dados') irá ler este valor para saber qual tipo de senha gerar.
     localStorage.setItem('tipoAtendimento', tipo);
     
+        // após salvar a informação, redireciona o usuário para a rota '/dados', onde ele preencherá suas informações.
     navigate('/dados');
   };
 
+  
+  // RENDERIZAÇÃO DO COMPONENTE
   return (
     <>
       {}
