@@ -199,30 +199,41 @@ const styles = `
   }
 `;
 
+// componente funcional para exibir o ticket gerado.
 function Ticket() {
-  const navigate = useNavigate();
+  const navigate = useNavigate();// hook para navegação.
+  // estado para armazenar os dados do ticket. Inicia como nulo.
   const [ticketData, setTicketData] = useState(null);
 
+  
+  // useEffect é usado para buscar os dados assim que o componente é montado.
   useEffect(() => {
-
+   // busca a string com os dados do ticket que foi salva no localStorage pelo componente anterior.
     const savedDataString = localStorage.getItem('ultimoAtendimentoGerado');
 
+    // verifica se algum dado foi encontrado.
     if (savedDataString) {
+         // converte a string JSON de volta para um objeto JavaScript.
       const parsedData = JSON.parse(savedDataString);
 
-      
+          // atualiza o estado do componente com os dados do ticket, o que causará uma nova renderização.
       setTicketData(parsedData);
     }
-  }, []);
+  }, []);// o array de dependências vazio [] garante que este efeito execute apenas uma vez.
 
+   // manipulador de evento para o botão "Finalizar".
   const handleFinish = () => {
+      // leva o usuário de volta para a página inicial.
     navigate('/');
   };
 
+  // renderização condicional: se os dados do ticket ainda não foram carregados, exibe uma mensagem.
+  // isso previne erros de tentar acessar `ticketData.nome` quando `ticketData` ainda é nulo.
   if (!ticketData) {
     return <div>Carregando informações do ticket...</div>;
   }
 
+    // renderização principal do componente, executada após os dados serem carregados.
   return (
     <div className="ticket-body-scope">
       <style>{styles}</style>
