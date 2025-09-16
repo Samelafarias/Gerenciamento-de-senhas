@@ -188,7 +188,10 @@ const styles = `
     background: #0199b7;
   }
 `;
-
+/**
+ * gera uma chave única baseada na data atual (ex: "atendimentos_2025-09-15").
+ * seria útil para agrupar atendimentos por dia no localStorage ou em um banco de dados.
+ */
 const getChaveDoDia = () => {
   const hoje = new Date();
   const ano = hoje.getFullYear();
@@ -197,45 +200,58 @@ const getChaveDoDia = () => {
   return `atendimentos_${ano}-${mes}-${dia}`;
 };
 
+// componente funcional que renderiza o formulário de dados do cliente.
 function Dados() {
   const navigate = useNavigate();
 
+  //GERENCIAMENTO DE ESTADO
+  // estado único para todos os campos do formulário.
   const [formData, setFormData] = useState({
     nome: '',
     cpf: '',
     setor: ''
   });
 
+   // MANIPULADORES DE EVENTOS (HANDLERS)
+
+  // manipulador genérico para atualizar o estado quando o usuário digita nos inputs (nome, cpf).
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target;// desestrutura o nome e o valor do input.
     setFormData(prevState => ({
-      ...prevState,
-      [name]: value
+      ...prevState,// mantém os dados existentes do estado.
+      [name]: value// atualiza a propriedade correspondente ao 'name' do input.
     }));
   };
   
+    // manipulador específico para os botões de seleção de setor.
   const handleSetorClick = (setor) => {
     setFormData(prevState => ({
       ...prevState,
-      setor: setor
+      setor: setor // atualiza apenas a propriedade 'setor' do estado.
     }));
   };
 
+  // função principal executada quando o formulário é enviado.
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault();// previne o comportamento padrão do formulário (recarregar a página).
+
+     // validação simples para garantir que um setor foi escolhido.
     if (!formData.setor) {
       alert('Por favor, selecione um setor para ser atendido.');
-      return;
+      return;// interrompe a execução da função se nenhum setor foi selecionado.
     }
 
+       // busca o tipo de atendimento (ex: 'Prioritário') que foi salvo na tela anterior.
     const tipoAtendimento = localStorage.getItem('tipoAtendimento') || 'Não definido';
 
-    const timestamp = Date.now();
-    const senhaLetra = tipoAtendimento === 'Prioritário' ? 'P' : 'C';
-    const senhaNumero = String(timestamp).slice(-4); 
+        // lógica para gerar uma senha semi-única.
+    const timestamp = Date.now();// pega o tempo atual em milissegundos.
+    const senhaLetra = tipoAtendimento === 'Prioritário' ? 'P' : 'C';// define o prefixo da senha.
+    const senhaNumero = String(timestamp).slice(-4); // pega os últimos 4 dígitos do timestamp.
 
+     // monta o objeto final com todos os dados do atendimento.
     const dadosCompletos = {
-      id: formData.cpf || `${senhaLetra}-${timestamp}`, 
+      id: formData.cpf || `${senhaLetra}-${timestamp}`, // usa o CPF como ID, ou um ID fallback.
       nome: formData.nome,
       cpf: formData.cpf,
       setor: formData.setor,
@@ -245,13 +261,18 @@ function Dados() {
       dataHora: new Date().toISOString()
     };
 
+     // ponto crucial: Envia o novo atendimento para o servidor via WebSocket.
     socket.emit('gerar-novo-atendimento', dadosCompletos);
 
-    localStorage.setItem('ultimoAtendimentoGerado', JSON.stringify(dadosCompletos));
     
+    // salva uma cópia do ticket gerado no localStorage para ser usado pela próxima tela.
+    localStorage.setItem('ultimoAtendimentoGerado', JSON.stringify(dadosCompletos));
+   
+     // redireciona o usuário para a página que exibirá o ticket.
     navigate('/ticket'); 
   };
 
+    //RENDERIZAÇÃO DO COMPONENTE
   return (
     <div className='dados-body'>
       <style>{styles}</style>
