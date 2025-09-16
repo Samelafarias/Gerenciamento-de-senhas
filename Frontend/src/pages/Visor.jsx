@@ -1,20 +1,35 @@
 import React, { useState, useEffect, useRef } from 'react';
 import socket from '../socket';
 
+// componente funcional que representa o painel de exibição (TV, monitor, etc.).
 function Visor() {
-  const [senhaPrincipal, setSenhaPrincipal] = useState(null);
-  const [historicoSenhas, setHistoricoSenhas] = useState([]);
+
+    //  GERENCIAMENTO DE ESTADO
+  const [senhaPrincipal, setSenhaPrincipal] = useState(null);// armazena os dados da senha que está sendo chamada no momento.
+  const [historicoSenhas, setHistoricoSenhas] = useState([]);// armazena a lista de todas as senhas já finalizadas/chamadas.
   
+   // REFERÊNCIAS 
+  // useRef cria uma referência direta a um elemento do DOM, neste caso, a tag <audio>.
+  // isso permite controlar a reprodução do som diretamente via JavaScript.
   const audioRef = useRef(null);
 
+    //EFEITOS (LÓGICA DE CONEXÃO)
   useEffect(() => {
+      // define um "ouvinte" para o evento 'nova-senha-chamada', emitido pelo painel do administrador.
   socket.on('nova-senha-chamada', (senha) => {
+      // atualiza o estado para exibir a nova senha chamada como a principal.
       setSenhaPrincipal(senha);
     
+        // tenta reproduzir o som de notificação.
       if (audioRef.current) {
         const playPromise = audioRef.current.play();
+
+        // a reprodução de áudio retorna uma "Promise". É uma boa prática tratá-la.
         if (playPromise !== undefined) {
           playPromise.catch(error => {
+
+             // navegadores modernos bloqueiam a reprodução automática de som se o usuário não interagiu com a página primeiro.
+            // este 'catch' lida com esse erro comum, exibindo uma mensagem informativa no console.
             console.error("Falha na reprodução automática do áudio:", error);
             console.log("Isso acontece devido às políticas de autoplay do navegador, que exigem uma interação do usuário na página antes de permitir o som.");
           });
@@ -22,24 +37,34 @@ function Visor() {
       }
     });
 
+
+    
+    // ouve o evento 'finalizados-inicial' para carregar o histórico quando o visor é aberto pela primeira vez.
     socket.on('finalizados-inicial', (finalizados) => {
       setHistoricoSenhas(finalizados);
+            // se já houver um histórico, exibe a última senha chamada para que a tela não comece vazia.
+
       if (finalizados.length > 0) {
         setSenhaPrincipal(finalizados[finalizados.length - 1]);
       }
     });
 
+       // ouve por atualizações na lista de finalizados para manter o histórico sempre atualizado.
     socket.on('atualizar-finalizados', (novosFinalizados) => {
       setHistoricoSenhas(novosFinalizados);
     });
 
+       // função de limpeza: remove os "ouvintes" quando o componente é desmontado para evitar vazamentos de memória.
     return () => {
       socket.off('nova-senha-chamada');
       socket.off('finalizados-inicial');
       socket.off('atualizar-finalizados');
     };
-  }, []); 
+  }, []); // o array vazio [] garante que este efeito rode apenas uma vez.
 
+    // DADOS DERIVADOS PARA RENDERIZAÇÃO 
+  // pega a lista completa de histórico, extrai apenas os 3 últimos itens e os inverte
+  // para que o mais recente apareça primeiro na lista de "Últimas senhas".
   const ultimasSenhas = historicoSenhas.slice(-3).reverse();
 
   const styles = `
@@ -170,6 +195,8 @@ function Visor() {
         }
       `; 
 
+      
+  // RENDERIZAÇÃO DO COMPONENTE
   return (
     <>
       <style>{styles}</style>
