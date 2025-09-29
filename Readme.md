@@ -20,11 +20,11 @@ O sistema até o presente momento esta funcionando apenas localhost, caso tenha 
   - Marcar o atendimento como "Não Compareceu".
   - Finalizar o atendimento e chamar o próximo da fila.
 
-- **Visor público com alerta sonoro-** A tela de visualização é atualizada imediatamente quando um atendente clica em "Realizar Atendimento", tocando um alerta sonoro para notificar os clientes. O histórico de senhas já finalizadas também é exibido.
+- **Visor público com alerta sonoro -** A tela de visualização é atualizada imediatamente quando um atendente clica em "Realizar Atendimento", tocando um alerta sonoro para notificar os clientes. O histórico de senhas já finalizadas também é exibido.
 
 - **Sincronização Multi-dispositivo -** Graças ao backend com Socket.IO, todas as telas (Totem, Admin, Visor) são sincronizadas em tempo real, mesmo em diferentes computadores ou redes.
 
-- **Relatório diário para Dowloand-** O administrador pode gerar e baixar um relatório completo (.txt) dos atendimentos finalizados no dia, em vez de apenas visualizá-lo em um alerta.
+- **Relatório diário para Download -** O administrador pode gerar e baixar um relatório completo (.txt) dos atendimentos finalizados no dia, em vez de apenas visualizá-lo em um alerta.
 
 ## 💻 Tecnologias Utilizadas
  **Frontend**
@@ -73,7 +73,7 @@ O projeto foi estruturado seguindo uma adaptação do padrão arquitetural **MVC
     npm install
     npm run dev
  ```
-O servisor do backend esta rodando no `http://localhost:4000`
+O servisor do backend está rodando no `http://localhost:4000`
 
  3. Configure o frontend
  Abra um novo terminal
@@ -88,10 +88,10 @@ O servisor do backend esta rodando no `http://localhost:4000`
 A aplicação frontend estará disponível em http://localhost:5173 (ou outra porta indicada pelo Vite).
 
  ## ☁️ Implantação (Deployment)
- Este projeto foi implantado utilizando a seguinte estratégia:
+ Esse projeto foi implantado utilizando a seguinte estratégia:
 
-- O Backend Node.js esta funcionando localhost.
-- O Frontend React esta funcionando localhost.
+- O Backend Node.js está funcionando localhost.
+- O Frontend React está funcionando localhost.
 
 
 
@@ -103,5 +103,5 @@ A aplicação frontend estará disponível em http://localhost:5173 (ou outra po
  - [Kaique do Vale](https://github.com/KaiqueVale)
 
  ## 📄 Licença
- Esse projeto foi feito com fins academicos.
+ Esse projeto foi feito com fins acadêmicos.
  
